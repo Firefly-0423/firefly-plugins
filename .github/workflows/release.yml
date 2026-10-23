@@ -1,0 +1,31 @@
+name: Release plugins
+
+# Manual only: builds every package from the committed sources, checks them against registry.json,
+# and creates a GitHub Release for each <id>-<version> that does not exist yet. Existing releases are never changed.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Registry matches the plugin sources
+        run: npm run check
+      - name: Publish missing releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release.mjs --publish

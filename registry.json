@@ -1,0 +1,84 @@
+{
+  "apiVersion": 1,
+  "plugins": [
+    {
+      "id": "text-stats",
+      "name": "文本统计",
+      "version": "1.0.0",
+      "description": "离线统计文本的 Unicode 字符数、空白分隔词数和非空行数，不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "Unicode 字符、空白分隔词和非空行统计",
+        "离线计算，不联网、不读写文件、不执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/text-stats-1.0.0/text-stats-1.0.0.zip",
+      "sha256": "b0294a0535b0cd34ff4ba28735fdb0e762805ecdece23639133eec7a111eb84b"
+    },
+    {
+      "id": "json-tools",
+      "name": "JSON 工具",
+      "version": "1.0.0",
+      "description": "离线校验 JSON 是否合法且无损，并按结构比较两段 JSON、报告第一处差异路径。不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "JSON 语法与无损校验（负零、溢出数字）",
+        "两段 JSON 的结构比较与首处差异路径",
+        "离线计算，不联网、不读写文件、不执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/json-tools-1.0.0/json-tools-1.0.0.zip",
+      "sha256": "45f7dd63faae3d468430ca50171a5fa1c78abba54de8fc4fb573f6feb184851a"
+    },
+    {
+      "id": "timezone-tools",
+      "name": "时区工具",
+      "version": "1.0.0",
+      "description": "离线校验 IANA 时区名，并在时区之间换算时间（处理夏令时空档与重复时刻）。不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "IANA 时区名校验与规范化",
+        "时区间时间换算，识别夏令时空档与重复时刻",
+        "离线计算，不联网、不读写文件、不执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/timezone-tools-1.0.0/timezone-tools-1.0.0.zip",
+      "sha256": "6168c3ebe063a3e931cc87262df0c12838ad2309c586d058a0517facf4f51149"
+    },
+    {
+      "id": "code-language",
+      "name": "代码语言识别",
+      "version": "1.0.0",
+      "description": "离线按文件扩展名识别源码、配置、脚本和标记文件的语法高亮语言，只看文件名，不读取文件内容。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "按扩展名识别 61 种语言的语法高亮 id 和短名",
+        "只看文件名，不读取文件内容",
+        "离线计算，不联网、不读写文件、不执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/code-language-1.0.0/code-language-1.0.0.zip",
+      "sha256": "5b41a4999ebfb6e123171a2bd16029c382e62b1c7188337d9b3309a2c10f0539"
+    },
+    {
+      "id": "text-trim",
+      "name": "文本截断",
+      "version": "1.0.0",
+      "description": "离线把长文本按 UTF-8 字节预算截断为开头、结尾或两端，落在完整字符边界上并报告确切丢弃的字节数。不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "按 UTF-8 字节预算保留开头、结尾或两端",
+        "截断落在完整字符边界上，报告确切丢弃的字节数",
+        "离线计算，不联网、不读写文件、不执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/text-trim-1.0.0/text-trim-1.0.0.zip",
+      "sha256": "ee946231547c6da68329554da9346dde6caa25ddc096933220978378957a1608"
+    }
+  ]
+}

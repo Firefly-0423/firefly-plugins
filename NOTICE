@@ -1,0 +1,12 @@
+Firefly plugin marketplace
+Copyright (c) 2026 Firefly-0423
+
+The repository tooling (scripts, tests, workflows, schema copies) is licensed under the MIT License in LICENSE.
+
+Each plugin under plugins/<id>/ carries its own LICENSE, which is the license of that plugin's package.
+The plugins json-tools, timezone-tools, code-language and text-trim adapt small utilities from
+deepseek-harness (https://github.com/deepseek-ai/deepseek-harness), Copyright (c) 2026 DeepSeek,
+used under the MIT License; their LICENSE files keep that notice.
+
+Firefly and Honkai: Star Rail characters and intellectual property belong to HoYoverse / miHoYo.
+This is an unofficial, non-commercial fan project.
