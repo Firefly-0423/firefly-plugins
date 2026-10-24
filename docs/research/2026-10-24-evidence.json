@@ -1,0 +1,166 @@
+{
+  "checkedOn": "2026-10-24",
+  "timezone": "Asia/Singapore",
+  "scope": "Market research only; no cross-host install, OAuth connection or code reuse verified.",
+  "fireflyPlugins": {
+    "root": "Firefly-0423/firefly-plugins",
+    "commit": "19bae4828d5db2e4e96caa7975a7af1a645a6b48",
+    "baseline": {
+      "command": "npm test",
+      "runnerCases": 79,
+      "pass": 79,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "fireflyHost": {
+    "root": "Firefly-0423/Firefly-Agent (development branch codex/approval-origin)",
+    "commit": "36ade0228944a89eda5f0fe97154d60e5b7a8409",
+    "mcpTransports": [
+      "stdio",
+      "sse"
+    ],
+    "note": "MCP transport and package compatibility are distinct; no Streamable HTTP connection path found in the inspected config/adapter."
+  },
+  "claudeCatalog": {
+    "url": "https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json",
+    "blobSha": "4013c22afd516f1108134c87ed2d6f9839526e85",
+    "name": "claude-plugins-official",
+    "entries": 315,
+    "note": "Count is this repository catalog snapshot, not all Claude Marketplace listings, installs or unique capabilities.",
+    "selected": [
+      {
+        "name": "frontend-design",
+        "source": "./plugins/frontend-design",
+        "version": null
+      },
+      {
+        "name": "code-review",
+        "source": "./plugins/code-review",
+        "version": null
+      },
+      {
+        "name": "plugin-dev",
+        "source": "./plugins/plugin-dev",
+        "version": null
+      },
+      {
+        "name": "context7",
+        "source": "./external_plugins/context7",
+        "version": null
+      },
+      {
+        "name": "playwright",
+        "source": "./external_plugins/playwright",
+        "version": null
+      }
+    ]
+  },
+  "openai": {
+    "source": "https://developers.openai.com/plugins/concepts/plugins",
+    "note": "Official documentation describes a universal directory shared by ChatGPT and Codex. Discovery returned selected public provider listings, not an exhaustive directory count."
+  },
+  "dsh": {
+    "source": "https://deepseek-harness.github.io/deepseek-harness/en/guide/plugin-market",
+    "note": "Official docs: custom plugin-market indexes; DSH ships no index source. Community counts are not compared as a platform total.",
+    "selected": [
+      {
+        "repository": "STARDUSTLC666/dsh-rss",
+        "sourceVersion": "0.7.0",
+        "source": "https://github.com/STARDUSTLC666/dsh-rss/blob/master/package.json",
+        "versionKind": "source manifest",
+        "license": "MIT"
+      },
+      {
+        "repository": "Nagi-ovo/dsh-visualize",
+        "sourceVersion": "0.1.7",
+        "source": "https://github.com/Nagi-ovo/dsh-visualize/blob/main/package.json",
+        "versionKind": "source manifest",
+        "license": "BSD-3-Clause"
+      },
+      {
+        "repository": "Vncntvx/dsh-zotero",
+        "sourceVersion": "0.13.0",
+        "source": "https://github.com/Vncntvx/dsh-zotero/releases",
+        "versionKind": "source manifest and GitHub release",
+        "releaseDate": "2026-10-20",
+        "license": "MIT"
+      },
+      {
+        "repository": "ikashana/dsh-notify",
+        "sourceVersion": "0.1.0",
+        "source": "https://github.com/ikashana/dsh-notify/blob/main/package.json",
+        "versionKind": "source manifest",
+        "license": "MIT"
+      },
+      {
+        "repository": "Han-1413141/dsh-cost-meter",
+        "sourceVersion": "1.9.36",
+        "source": "https://github.com/Han-1413141/dsh-cost-meter/blob/master/package.json",
+        "blobSha": "23a833cfee94be58d36a52b393bacd13f8a9a120",
+        "versionKind": "source manifest; indexed README/release snapshots differ",
+        "license": "MIT"
+      }
+    ]
+  },
+  "probes": {
+    "unicodeCounts": {
+      "characters": 10,
+      "words": 2,
+      "nonEmptyLines": 1
+    },
+    "unsafeIntegerComparison": {
+      "equal": true
+    },
+    "duplicateKeyComparison": {
+      "equal": true
+    },
+    "halfHourFold": {
+      "instant": "2026-04-04T14:45:00.000Z",
+      "ambiguous": true,
+      "alternativeInstant": "2026-04-04T15:15:00.000Z",
+      "from": {
+        "zone": "Australia/Lord_Howe",
+        "local": "2026-04-05T01:45:00.000",
+        "offset": "+11:00"
+      },
+      "to": {
+        "zone": "UTC",
+        "local": "2026-04-04T14:45:00.000",
+        "offset": "+00:00"
+      }
+    },
+    "filenameLimits": {
+      "results": [
+        {
+          "path": "Makefile",
+          "language": null,
+          "shortName": null
+        },
+        {
+          "path": "Dockerfile",
+          "language": null,
+          "shortName": null
+        },
+        {
+          "path": ".env",
+          "language": "dotenv",
+          "shortName": "env"
+        },
+        {
+          "path": ".env.local",
+          "language": null,
+          "shortName": null
+        }
+      ]
+    },
+    "markerBudget": {
+      "text": "a\n[... omitted 4 bytes ...]\nf",
+      "truncated": true,
+      "totalBytes": 6,
+      "keptBytes": 2,
+      "omittedBytes": 4,
+      "notice": "Omitted 4 bytes."
+    }
+  }
+}
