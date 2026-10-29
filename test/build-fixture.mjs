@@ -1,7 +1,7 @@
 import { realpathSync } from "node:fs";
 import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import path from "node:path";
-import { REPO_ROOT } from "../scripts/build.mjs";
+import { REPO_ROOT, CATALOG_PLUGIN_IDS } from "../scripts/build.mjs";
 
 export const json = async file => JSON.parse(await readFile(file, "utf8"));
 
@@ -13,8 +13,11 @@ export async function sourceFixture(t) {
     if (path.dirname(owned) !== parent || realpathSync(root) !== owned) throw new Error("Unsafe test cleanup path");
     await rm(root, { recursive: true, force: true });
   });
-  for (const name of ["scripts", "schema", "plugins", "LICENSE"]) {
+  for (const name of ["scripts", "schema", "LICENSE"]) {
     await cp(path.join(REPO_ROOT, name), path.join(root, name), { recursive: true });
+  }
+  for (const id of CATALOG_PLUGIN_IDS) {
+    await cp(path.join(REPO_ROOT, "plugins", id), path.join(root, "plugins", id), { recursive: true });
   }
   return root;
 }

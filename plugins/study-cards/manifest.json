@@ -1,0 +1,1 @@
+{"apiVersion":1,"id":"study-cards","name":"学习卡片","version":"0.1.0","description":"本地创建和复习学习卡片，按评分安排下次复习，无需 Anki 或外部服务。","author":"Firefly-0423","entry":"index.cjs","defaultEnabled":false,"deps":[]}
