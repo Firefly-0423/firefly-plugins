@@ -1,0 +1,55 @@
+{
+  "repository": "https://github.com/fourzkw/dsh-drawai",
+  "commit": "80eb15e0a3a11cb4c88cf8716382d03cdf0e5b03",
+  "changes": [
+    "ES module suffixes",
+    "Bounded zlib inflation",
+    "Extract dependency closures of geometry and supported operations; exclude DSH/media APIs"
+  ],
+  "generated": [
+    {
+      "path": "upstream/style-kernel.mjs",
+      "sha256": "9cba887da140b58d9342c9482d2b2e2a98690a544f577c77e78e005ba9597000"
+    },
+    {
+      "path": "upstream/mxfile.mjs",
+      "sha256": "3f1f7d095cede848cc5b79003e43e551a170c27542d0355750574a7aacd27bbd"
+    },
+    {
+      "path": "upstream/geometry.mjs",
+      "sha256": "36502d9f6cc3c78bab136d1a36d3d3fd459d5f8a71b64f5584b5c63da630d625"
+    },
+    {
+      "path": "upstream/operations.mjs",
+      "sha256": "46d03c2d103c78ac0ecb14e1b82ed1aed5330201549f921df6841d6b1b5831c2"
+    },
+    {
+      "path": "upstream/LICENSE",
+      "sha256": "f9eb8c349190b5163bf8cc2454f2dab635d34603698deb4e62ff5245103de169"
+    },
+    {
+      "path": "vendor/saxes.cjs",
+      "sha256": "1f0926f025a29dae86158ec0dc10dc67a1d51c5158ee0aa32ceef0ac5fafeacf"
+    },
+    {
+      "path": "vendor/xmlchars/xml/1.0/ed5.cjs",
+      "sha256": "ea350479ab6f6553c0c3395c30ec440fb39821f6902081939831ddf1b5e8fd0f"
+    },
+    {
+      "path": "vendor/xmlchars/xml/1.1/ed2.cjs",
+      "sha256": "461d5c71cc6076dc16aebbfd2d3c506481df5a74f43631d82372a6ffdc239d69"
+    },
+    {
+      "path": "vendor/xmlchars/xmlns/1.0/ed3.cjs",
+      "sha256": "ff14ffa3a2cdfdd1b6077c4a8443dc949f53d5bb56de5ed89d4dbc5d9fdf08f7"
+    },
+    {
+      "path": "vendor/xmlchars-LICENSE.txt",
+      "sha256": "45d196313c2647d313cc65ca9b093d2d6974b64d35ee7346f2c60c9d518dff2c"
+    },
+    {
+      "path": "vendor/saxes-LICENSE.txt",
+      "sha256": "07648979cea27b8674d6ac23367410fa082b381e68574454090a800e9a58fd09"
+    }
+  ]
+}

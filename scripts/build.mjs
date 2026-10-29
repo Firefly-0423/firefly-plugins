@@ -34,9 +34,9 @@ export function validateId(id) {
 
 async function regularFile(file) {
   const info = await lstat(file);
-  if (!info.isFile() || info.isSymbolicLink()) throw new Error(`Expected a regular file, not a symlink: ${file}`);
+  if (!info.isFile() || info.isSymbolicLink() || info.nlink > 1) throw new Error(`Expected a regular file, not a link: ${file}`);
   if (info.size > MAX_ZIP_BYTES) throw new Error(`File exceeds the 50 MiB package limit: ${file}`);
-  return readFile(file, "utf8");
+  return new TextDecoder("utf-8", { fatal: true }).decode(await readFile(file));
 }
 
 export async function readContract(root = REPO_ROOT) {
@@ -69,6 +69,32 @@ async function readPlugin(root, id, validate, contract) {
     const text = name === "manifest.json" ? manifestText : lf(await regularFile(path.join(dir, name)));
     if (!text.trim()) throw new Error(`Empty required package file: ${id}/${name}`);
     files.set(name, Buffer.from(text, "utf8"));
+  }
+  const descriptor = path.join(dir, "package-files.json");
+  try {
+    const raw = await regularFile(descriptor);
+    if (Buffer.byteLength(raw) > 65536) throw new Error(`Oversized asset list: ${id}`);
+    const extra = JSON.parse(raw);
+    if (!extra || Object.keys(extra).join() !== "files" || !Array.isArray(extra.files) || extra.files.length > 128) throw new Error(`Invalid asset list: ${id}`);
+    const seen = new Set(PACKAGE_FILES.map(name => name.toLowerCase()));
+    for (const name of [...extra.files].sort()) {
+      if (typeof name !== "string" || name.length > 240 || !/^[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)*$/.test(name)
+        || name.split("/").some(part => part.startsWith(".") || /[. ]$/.test(part) || /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(part))
+        || seen.has(name.toLowerCase()) || name.toLowerCase() === "package-files.json") throw new Error(`Unsafe or duplicate asset: ${id}/${name}`);
+      seen.add(name.toLowerCase());
+      let target = dir;
+      for (const part of name.split("/")) {
+        target = path.join(target, part);
+        const metadata = await lstat(target);
+        if (metadata.isSymbolicLink()) throw new Error(`Linked asset rejected: ${id}/${name}`);
+      }
+      const text = lf(await regularFile(target));
+      if (Buffer.byteLength(text) > 2 * 1024 * 1024 || text.includes("\0")) throw new Error(`Asset must be bounded UTF-8 text: ${id}/${name}`);
+      files.set(name, Buffer.from(text, "utf8"));
+    }
+    if (manifest.settingsPanel && !files.has(manifest.settingsPanel)) throw new Error(`Settings panel is not packaged: ${id}`);
+  } catch (failure) {
+    if (failure?.code !== "ENOENT" || failure?.path !== descriptor) throw failure;
   }
   return { manifest, capabilities, files };
 }

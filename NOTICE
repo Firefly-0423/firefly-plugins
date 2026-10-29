@@ -8,5 +8,12 @@ The plugins json-tools, timezone-tools, code-language and text-trim adapt small 
 deepseek-harness (https://github.com/deepseek-ai/deepseek-harness), Copyright (c) 2026 DeepSeek,
 used under the MIT License; their LICENSE files keep that notice.
 
+The drawai plugin adapts document/style and geometry/interaction algorithms from
+fourzkw/dsh-drawai (https://github.com/fourzkw/dsh-drawai), commit
+80eb15e0a3a11cb4c88cf8716382d03cdf0e5b03, Copyright (c) 2026 fourzkw, MIT.
+Its readable adapted runtime and original notice are included in upstream/.
+Its XML validator uses saxes 6.0.0 (ISC, including retained historical notices)
+and xmlchars 2.2.0 (MIT); full notices are included in the plugin's vendor/.
+
 Firefly and Honkai: Star Rail characters and intellectual property belong to HoYoverse / miHoYo.
 This is an unofficial, non-commercial fan project.
