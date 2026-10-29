@@ -87,3 +87,50 @@ test('built plugin package has only the four public files and starts disabled', 
   assert.deepEqual(Object.keys(zip.files), ['LICENSE', 'README.md', 'index.cjs', 'manifest.json']);
   assert.equal(JSON.parse(await zip.file('manifest.json').async('string')).defaultEnabled, false);
 });
+
+test('validation failures are not applied while a storage failure remains uncertain', async () => {
+  const { createPlugin } = require('../plugins/study-cards/index.cjs');
+  const h = harness({ get: () => undefined, set: () => { throw new Error('disk full'); } });
+  const plugin = createPlugin(); await plugin.register(h.ctx);
+  assert.equal(JSON.parse(await h.tools.get('study-cards_create').execute({ deck: '', front: 'a', back: 'b' })).effectState, 'not_applied');
+  const failed = JSON.parse(await h.tools.get('study-cards_create').execute({ deck: 'A', front: 'a', back: 'b' }));
+  assert.equal(failed.success, false); assert.equal(failed.effectState, 'unknown');
+  await plugin.unregister();
+});
+
+test('duplicate ids and negative intervals in stored data refuse mutations', async () => {
+  const { createPlugin } = require('../plugins/study-cards/index.cjs');
+  for (const corrupt of ['duplicate', 'interval']) {
+    const store = storage(), h = harness(store), plugin = createPlugin(); await plugin.register(h.ctx);
+    await h.tools.get('study-cards_create').execute({ deck: 'A', front: 'a', back: 'b' });
+    const state = store.get('cards-v1');
+    if (corrupt === 'duplicate') state.cards.push(structuredClone(state.cards[0]));
+    else state.cards[0].interval = -1;
+    store.set('cards-v1', state);
+    const result = JSON.parse(await h.tools.get('study-cards_create').execute({ deck: 'B', front: 'a', back: 'b' }));
+    assert.equal(result.success, false);
+    assert.deepEqual(store.get('cards-v1'), state);
+    await plugin.unregister();
+  }
+});
+
+test('ratings, upper interval bound, pagination and stopped handlers behave consistently', async () => {
+  const { createPlugin } = require('../plugins/study-cards/index.cjs');
+  const h = harness(storage()), plugin = createPlugin({ now: () => 1000000000000 }); await plugin.register(h.ctx);
+  const day = 86400000;
+  for (const [rating, interval] of [[1, 600000], [2, day], [3, 3 * day], [4, 7 * day]]) {
+    const c = JSON.parse(await h.tools.get('study-cards_create').execute({ deck: 'A', front: String(rating), back: 'b' })).data;
+    const reviewed = JSON.parse(await h.tools.get('study-cards_review').execute({ cardId: c.cardId, expectedRevision: 1, rating }));
+    assert.equal(reviewed.data.dueAt, 1000000000000 + interval);
+    assert.equal(JSON.parse(await h.tools.get('study-cards_review').execute({ cardId: c.cardId, expectedRevision: 1, rating })).success, false);
+  }
+  const listed = JSON.parse(await h.tools.get('study-cards_list').execute({ limit: 2, offset: 2, deck: 'A' })).data;
+  assert.equal(listed.total, 4); assert.equal(listed.cards.length, 2);
+  let revision = listed.cards[0].revision;
+  for (let i = 0; i < 15; i++) {
+    const result = JSON.parse(await h.tools.get('study-cards_review').execute({ cardId: listed.cards[0].cardId, expectedRevision: revision++, rating: 4 }));
+    assert.ok(result.data.dueAt <= 1000000000000 + 365 * day);
+  }
+  const handler = h.tools.get('study-cards_create'); await plugin.unregister();
+  assert.equal(JSON.parse(await handler.execute({ deck: 'A', front: 'a', back: 'b' })).success, false);
+});

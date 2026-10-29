@@ -83,7 +83,7 @@
     {
       "id": "study-cards",
       "name": "学习卡片",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "description": "本地创建和复习学习卡片，按评分安排下次复习，无需 Anki 或外部服务。",
       "author": "Firefly-0423",
       "downloads": 0,
@@ -93,8 +93,8 @@
         "按用户评分计算下次复习时间",
         "使用 Firefly 插件私有存储，不联网、不依赖 Anki"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.1.0/study-cards-0.1.0.zip",
-      "sha256": "641d24ef8e8ce01eecd6b50bde8692cb7d84699ffd2122af07c904e0feca1db0"
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.1.1/study-cards-0.1.1.zip",
+      "sha256": "1ed7ec9aea990319988dffc0100e5412682ef849d37a4ef0c3701599bb339d23"
     }
   ]
 }
