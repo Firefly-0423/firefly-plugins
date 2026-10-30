@@ -1,14 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, writeFile, mkdir, link } from 'node:fs/promises';
-import { existsSync, realpathSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-const fixturePath = file => path.join(realpathSync(path.dirname(file)), path.basename(file));
-const samePath = (a, b) => process.platform === 'win32'
-    ? fixturePath(a).toLowerCase() === fixturePath(b).toLowerCase()
-    : fixturePath(a) === fixturePath(b);
 
 test('saving uses private staging and preserves existing POSIX permission bits', async () => {
     const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
@@ -39,7 +35,7 @@ test('failed atomic replacement keeps original bytes and the accepted draft', as
         let ui = await service.openNative(file);
         ui = await service.edit(ui.handle, { revision: ui.revision, ops: [{ op: 'setLabel', id: 'a', label: 'accepted draft' }] });
         const before = await readFile(file);
-        fs.rename = async (source, target) => { if (samePath(target, file)) throw Object.assign(new Error('fixture disk replacement failure'), { code: 'EIO' }); return originalRename(source, target); };
+        fs.rename = async (source, target) => { if (path.basename(target).toLowerCase() === 'original.drawio') throw Object.assign(new Error('fixture disk replacement failure'), { code: 'EIO' }); return originalRename(source, target); };
         await assert.rejects(service.save(ui.handle), { code: 'EIO' });
         assert.deepEqual(await readFile(file), before);
         assert.equal((await service.state(ui.handle)).doc.nodes[0].label, 'accepted draft');
@@ -67,12 +63,12 @@ test('save-as holds the source identity while AI edits the original path', async
     try {
         const created = await service.agentApply(context, { path: 'original.drawio', create: true, ops: [{ op: 'addNode', id: 'a', label: 'original' }] });
         const ui = await service.openNative(path.join(root, 'original.drawio'));
-        fs.link = async (a, b) => { if (samePath(b, path.join(root, 'copy.drawio'))) {
+        fs.link = async (a, b) => { if (path.basename(b).toLowerCase() === 'copy.drawio') {
             entered();
             await gate;
         } return originalLink(a, b); };
         const save = service.save(ui.handle, path.join(root, 'copy.drawio'));
-        await atLink;
+        await Promise.race([atLink, save.then(() => { throw new Error('Save completed without reaching the fixture link gate'); })]);
         let aiDone = false;
         const ai = service.agentApply(context, { path: 'original.drawio', expectRevision: created.revision, ops: [{ op: 'setLabel', id: 'a', label: 'changed original' }] }).then(r => { aiDone = true; return r; });
         await new Promise(r => setTimeout(r, 40));
