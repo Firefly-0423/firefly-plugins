@@ -11,7 +11,7 @@ DrawAI is a Firefly API v1 plugin: import its ZIP, enable it, and use the plugin
 
 ## Verification
 
-The implementation has a 99-test repository suite, including extracted-ZIP execution outside repository dependencies. Tests cover path/case aliases, draft conflicts, recovery, save-as serialization, failed replacement, non-default compressed no-op round-trips, UTF-8 BOM preservation, operation schemas, runtime lifecycle and packaging validation.
+The implementation has a 109-test repository suite (including the merged study-cards tests), including extracted-ZIP execution outside repository dependencies. Tests cover path/case aliases, draft conflicts, recovery, save-as serialization, failed replacement, non-default compressed no-op round-trips, UTF-8 BOM preservation, operation schemas, runtime lifecycle and packaging validation.
 
 Run the portable checks:
 
@@ -26,7 +26,7 @@ node scripts/vendor-drawai.mjs --check
 The five existing 1.0.1 plugin ZIP hashes are unchanged. The DrawAI 0.1.1 package SHA-256 is:
 
 ```text
-5aa3caf823dfdcc853d2667e29e6a02cbe1daad1696a3781101ac1b190d1b528
+7a6e4972a1a7e6092fdce8a4e7ec5666b3e530d349fde2ff0f3e0c9639c7dace
 ```
 
 A separate native acceptance script uses a supplied compiled Firefly checkout and its Electron/Playwright dependencies:
@@ -59,3 +59,11 @@ These are native validation-window captures with fixture data, not design mockup
 The pinned upstream snapshot is `fourzkw/dsh-drawai@80eb15e0a3a11cb4c88cf8716382d03cdf0e5b03` (MIT, Copyright 2026 fourzkw). Original inputs live under `scripts/upstream/drawai/`; readable adapted modules and hashes are under `plugins/drawai/upstream/`. The generator extracts the supported geometry/operation dependency closures, replaces DSH coupling, bounds inflation and preserves full content revisions. The application code supplies Firefly lifecycle, storage, tool and window adapters.
 
 Saxes 6.0.0 and xmlchars 2.2.0 are vendored with their complete notices. Acorn 8.15.0 is a development-only extraction dependency. All versions are pinned in the lockfile.
+
+## 2026-10-30 review fixes
+
+File selection now precedes closing the current document; cancellation preserves the current document and recovery state. Diagram saves stage with mode 0600 and restore existing POSIX permission bits before replacement. Export replacement follows the same privacy rule. New regression tests reproduced both original defects before the fixes. POSIX permission preservation is asserted on POSIX runners; Windows checks the explicit private staging mode.
+
+The branch incorporates main while retaining both DrawAI and study-cards catalog entries. npm test (109 passed), build, check and vendor verification passed. Historical native run records above apply to their original artifacts; fresh native acceptance is recorded separately. No Release was published in this update.
+
+Fresh Electron acceptance on 2026-10-30 was stopped after an extended wait in a Playwright mouse.move step (script line 171). The process then exited with code 1. This run is incomplete and is not counted as passing; it does not establish a product regression. Unit and repository checks above completed normally.

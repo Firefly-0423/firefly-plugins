@@ -22,6 +22,7 @@ Firefly 在设置的插件页打开市场时读取目录，安装时只从本仓
 | `timezone-tools` 时区工具 | 校验 IANA 时区名，在时区之间换算时间（处理夏令时） |
 | `code-language` 代码语言识别 | 按文件扩展名识别语法高亮语言，只看文件名 |
 | `text-trim` 文本截断 | 按 UTF-8 字节预算截断长文本的开头、结尾或两端 |
+| `study-cards` 学习卡片 | 创建和复习本地问答卡，无需 Anki |
 | `drawai` DrawAI 画布 | 独立窗口编辑 .drawio，AI 读图改图，导出 SVG/PNG；本地试用，尚未发布 |
 
 前五个插件完全离线运行：不联网、不读写文件、不执行命令。DrawAI 也不联网或执行命令，但会读写用户选定的图文件、会话工作区文件和插件私有恢复草稿；不额外调用模型。详见 [DrawAI 使用与边界](plugins/drawai/README.md)。
@@ -29,6 +30,8 @@ Firefly 在设置的插件页打开市场时读取目录，安装时只从本仓
 DrawAI 当前仅有本地 ZIP，需在 Firefly 插件页导入后单独启用，再点击“打开”。本地构建和目录记录不代表对应 GitHub Release 已经发布。
 
 画布窗口由 Firefly 的插件接口打开，AI 工具也注册到 Firefly 自身的模型工具链。普通用户安装使用无需运行下方的 Node.js/npm 开发命令，也无需安装 DSH。当前试用包为 DrawAI 0.1.1。
+
+学习卡片使用 Firefly 插件私有存储保存卡片与复习记录，详见 [插件说明](plugins/study-cards/README.md)。
 
 ## 开发一个插件
 

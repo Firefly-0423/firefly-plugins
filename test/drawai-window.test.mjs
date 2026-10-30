@@ -34,3 +34,21 @@ test('export validation refuses active SVG and invalid PNG', () => {
     assert.equal(validateExport('svg', '<svg xmlns="http://www.w3.org/2000/svg"><text>安全</text></svg>').includes(Buffer.from('安全')), true);
     assert.throws(() => validateExport('png', Buffer.from('not png').toString('base64')));
 });
+
+test('canceling file selection preserves the current dirty document without asking to discard', async () => {
+    const handlers = new Map(); let window, closed = 0, asked = 0;
+    class Win extends EventEmitter {
+        constructor() { super(); window = this; this.webContents = new EventEmitter(); this.webContents.mainFrame = { url: 'firefly-plugin://drawai/ui/index.html' }; this.webContents.setWindowOpenHandler = () => {}; }
+        isDestroyed() { return !!this.dead; } async loadURL() {} show() {} focus() {} destroy() { this.dead = true; this.emit('closed'); }
+    }
+    const service = { listRecovery: async () => [], newNative: async () => ({ handle: 'draft' }), state: async () => ({ handle: 'draft', dirty: true, name: 'draft.drawio' }), close: async () => { closed++; }, stop: async () => {} };
+    const electron = { BrowserWindow: Win, ipcMain: { handle: (k,f) => handlers.set(k,f), removeHandler: k => handlers.delete(k) }, protocol: { isProtocolHandled: async () => true }, session: { fromPartition: () => ({ protocol: { handle: async () => {}, unhandle: async () => {} }, setPermissionRequestHandler() {}, setPermissionCheckHandler() {}, webRequest: { onBeforeRequest() {} } }) }, dialog: { showOpenDialog: async () => ({ canceled: true, filePaths: [] }), showMessageBox: async () => { asked++; return { response: 1 }; } } };
+    const host = createCanvasWindow({ service, storage: { get() {}, set() {} }, electron });
+    await host.open();
+    const invoke = action => [...handlers.values()][0]({ sender: window.webContents, senderFrame: window.webContents.mainFrame }, action);
+    await invoke('newDocument');
+    assert.equal((await invoke('openDocument')).value.canceled, true);
+    assert.equal(asked, 0); assert.equal(closed, 0);
+    assert.equal((await invoke('getState')).value.handle, 'draft');
+    await host.dispose();
+});

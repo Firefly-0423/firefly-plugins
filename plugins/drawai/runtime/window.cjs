@@ -74,7 +74,8 @@ function createCanvasWindow({ service, storage, signal, electron }) {
         }
         const temp = path.join(path.dirname(file), '.drawai-export-' + randomUUID() + '.tmp');
         try {
-            await fs.writeFile(temp, buffer, { flag: 'wx' });
+            await fs.writeFile(temp, buffer, { flag: 'wx', mode: 0o600 });
+            if (old) await fs.chmod(temp, old.mode & 0o777);
             live();
             await checkAbsolute(file, { missing: !old, extensions: ['.' + kind] });
             const current = await assertPlain(file, true);
@@ -95,9 +96,13 @@ function createCanvasWindow({ service, storage, signal, electron }) {
         async initial() { return { theme: storage.get('theme') || 'firefly-dark', state: handle ? await service.state(handle) : null, recovery: await service.listRecovery() }; },
         async newDocument() { if (!await leave())
             return { canceled: true }; const state = await service.newNative(); handle = state.handle; return state; },
-        async openDocument() { if (!await leave())
-            return { canceled: true }; const result = await dialog.showOpenDialog(win, { title: '打开 DrawAI 图', properties: ['openFile'], filters: [{ name: 'draw.io 图文件', extensions: ['drawio'] }] }); if (result.canceled)
-            return { canceled: true }; const state = await service.openNative(result.filePaths[0]); handle = state.handle; return state; },
+        async openDocument() {
+            const result = await dialog.showOpenDialog(win, { title: '打开 DrawAI 图', properties: ['openFile'], filters: [{ name: 'draw.io 图文件', extensions: ['drawio'] }] });
+            if (result.canceled || !result.filePaths?.length) return { canceled: true };
+            live();
+            if (!await leave()) return { canceled: true };
+            const state = await service.openNative(result.filePaths[0]); handle = state.handle; return state;
+        },
         async saveDocument(args) { if (!handle)
             throw error('E_HANDLE', '先新建或打开图'); return await save(args?.as === true) || { canceled: true }; },
         async editDocument(args) { if (!args || Object.keys(args).some(k => !['revision', 'ops', 'layout'].includes(k)))

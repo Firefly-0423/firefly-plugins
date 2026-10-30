@@ -98,9 +98,10 @@ function createDocumentService({ storageRoot, runEngine = defaultEngine, signal 
         const temp = path.join(path.dirname(file), '.drawai-' + randomUUID() + '.tmp');
         let fh;
         try {
-            fh = await fs.open(temp, 'wx');
+            fh = await fs.open(temp, 'wx', 0o600);
             await fh.writeFile(text, 'utf8');
             await fh.sync();
+            if (identity) await fh.chmod(identity.mode & 0o777);
             await fh.close();
             fh = null;
             live();

@@ -6,6 +6,24 @@ import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 
+test('saving uses private staging and preserves existing POSIX permission bits', async () => {
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const fs = createRequire(import.meta.url)('node:fs/promises');
+    const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-permissions-'));
+    const service = createDocumentService({ storageRoot: path.join(root, 'private') });
+    const originalOpen = fs.open; let stagedMode;
+    try {
+        await service.agentApply({ resolvedWorkspaceRoot: root }, { path: 'private.drawio', create: true, ops: [{ op: 'addNode', id: 'a', label: 'private' }] });
+        const file = path.join(root, 'private.drawio');
+        await fs.chmod(file, 0o600);
+        const state = await service.openNative(file);
+        fs.open = async (name, flags, mode) => { if (path.basename(name).startsWith('.drawai-')) stagedMode = mode; return originalOpen(name, flags, mode); };
+        await service.save(state.handle);
+        assert.equal(stagedMode, 0o600);
+        if (process.platform !== 'win32') assert.equal((await fs.stat(file)).mode & 0o777, 0o600);
+    } finally { fs.open = originalOpen; await service.stop(); }
+});
+
 test('failed atomic replacement keeps original bytes and the accepted draft', async () => {
     const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
     const fs = createRequire(import.meta.url)('node:fs/promises');
