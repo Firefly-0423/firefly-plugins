@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, writeFile, mkdir, link } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+const fixturePath = file => path.join(realpathSync(path.dirname(file)), path.basename(file));
 const samePath = (a, b) => process.platform === 'win32'
-    ? path.resolve(a).toLowerCase() === path.resolve(b).toLowerCase()
-    : path.resolve(a) === path.resolve(b);
+    ? fixturePath(a).toLowerCase() === fixturePath(b).toLowerCase()
+    : fixturePath(a) === fixturePath(b);
 
 test('saving uses private staging and preserves existing POSIX permission bits', async () => {
     const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
