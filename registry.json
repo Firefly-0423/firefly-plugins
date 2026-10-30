@@ -79,6 +79,22 @@
       ],
       "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/text-trim-1.0.1/text-trim-1.0.1.zip",
       "sha256": "a9e3175425a5f0f753808cb6961b70d1413d8e4e84a2edfa95294c23ee1c9a20"
+    },
+    {
+      "id": "study-cards",
+      "name": "学习卡片",
+      "version": "0.1.1",
+      "description": "本地创建和复习学习卡片，按评分安排下次复习，无需 Anki 或外部服务。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "创建本地问答卡片，按牌组读取新卡及待复习卡",
+        "按用户评分计算下次复习时间",
+        "使用 Firefly 插件私有存储，不联网、不依赖 Anki"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.1.1/study-cards-0.1.1.zip",
+      "sha256": "1ed7ec9aea990319988dffc0100e5412682ef849d37a4ef0c3701599bb339d23"
     }
   ]
 }
