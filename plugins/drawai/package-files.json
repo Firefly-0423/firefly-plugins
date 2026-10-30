@@ -1,0 +1,27 @@
+{
+  "files": [
+    "runtime/documents.cjs",
+    "runtime/engine.mjs",
+    "runtime/paths.cjs",
+    "runtime/tool-contract.cjs",
+    "runtime/window.cjs",
+    "runtime/worker-client.cjs",
+    "runtime/worker.cjs",
+    "ui/editor.css",
+    "ui/editor.mjs",
+    "ui/index.html",
+    "ui/preload.cjs",
+    "upstream/LICENSE",
+    "upstream/SOURCES.json",
+    "upstream/geometry.mjs",
+    "upstream/mxfile.mjs",
+    "upstream/operations.mjs",
+    "upstream/style-kernel.mjs",
+    "vendor/saxes-LICENSE.txt",
+    "vendor/saxes.cjs",
+    "vendor/xmlchars-LICENSE.txt",
+    "vendor/xmlchars/xml/1.0/ed5.cjs",
+    "vendor/xmlchars/xml/1.1/ed2.cjs",
+    "vendor/xmlchars/xmlns/1.0/ed3.cjs"
+  ]
+}

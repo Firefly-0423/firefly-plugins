@@ -23,8 +23,15 @@ Firefly 在设置的插件页打开市场时读取目录，安装时只从本仓
 | `code-language` 代码语言识别 | 按文件扩展名识别语法高亮语言，只看文件名 |
 | `text-trim` 文本截断 | 按 UTF-8 字节预算截断长文本的开头、结尾或两端 |
 | `study-cards` 学习卡片 | 创建和复习本地问答卡，无需 Anki |
+| `drawai` DrawAI 画布 | 独立窗口编辑 .drawio，AI 读图改图，导出 SVG/PNG；本地试用，尚未发布 |
 
-前五个插件完全离线运行：不联网、不读写文件、不执行命令。学习卡片插件不联网，通过 Firefly 的插件私有存储保存卡片和复习记录；详见 [插件说明](plugins/study-cards/README.md)。市场在线安装需要对应 Release ZIP 及已合并的目录记录。
+前五个插件完全离线运行：不联网、不读写文件、不执行命令。DrawAI 也不联网或执行命令，但会读写用户选定的图文件、会话工作区文件和插件私有恢复草稿；不额外调用模型。详见 [DrawAI 使用与边界](plugins/drawai/README.md)。
+
+DrawAI 当前仅有本地 ZIP，需在 Firefly 插件页导入后单独启用，再点击“打开”。本地构建和目录记录不代表对应 GitHub Release 已经发布。
+
+画布窗口由 Firefly 的插件接口打开，AI 工具也注册到 Firefly 自身的模型工具链。普通用户安装使用无需运行下方的 Node.js/npm 开发命令，也无需安装 DSH。当前试用包为 DrawAI 0.1.1。
+
+学习卡片使用 Firefly 插件私有存储保存卡片与复习记录，详见 [插件说明](plugins/study-cards/README.md)。
 
 ## 开发一个插件
 
@@ -38,6 +45,8 @@ npm run build                  # 生成 dist/ 下的 ZIP 和 registry.json
 ```
 
 每个插件一个目录 `plugins/<id>/`，包含 `manifest.json`、`index.cjs`、`README.md`、`LICENSE` 和 `catalog.json`（市场里展示的能力说明）。投稿流程和审核标准见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+带窗口的插件可在 `package-files.json` 中显式列出额外文本资源；构建器校验路径、重复项、链接、大小与 UTF-8。DrawAI 的固定上游来源保存在 `scripts/upstream/`，运行 `node scripts/vendor-drawai.mjs --check` 检查离线运行时与来源转换一致。
 
 ## 安全模型
 
@@ -61,7 +70,11 @@ The official plugin marketplace for [Firefly](https://github.com/Firefly-0423/Fi
 
 **Plugins.** `text-stats`, `json-tools`, `timezone-tools`, `code-language` and `text-trim`, all fully offline: no network, no file access, no commands.
 
+`drawai` adds an offline independent canvas, .drawio file editing, two AI tools and SVG/PNG export. It accesses explicitly selected files, the bound workspace and private recovery drafts. It makes no model calls. Its ZIP is currently local-only; it is not a published GitHub Release.
+
 **Develop.** With Node.js 24: `npm ci`, `npm run new-plugin <id>`, `npm test`, `npm run build`. Each plugin lives in `plugins/<id>/` with `manifest.json`, `index.cjs`, `README.md`, `LICENSE` and `catalog.json`. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+Extra readable assets use an explicit `package-files.json` list. Verify DrawAI's pinned source adaptation with `node scripts/vendor-drawai.mjs --check`; its ZIP runs without repository dependencies.
 
 **Security.** Pinned SHA-256 per package, published bytes never change (any change needs a new version), packages are built reproducibly by CI from committed sources, plugins are disabled on install, and no obfuscated or remote code is accepted.
 

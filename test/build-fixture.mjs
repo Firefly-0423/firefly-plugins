@@ -1,5 +1,5 @@
 import { realpathSync } from "node:fs";
-import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { REPO_ROOT, CATALOG_PLUGIN_IDS } from "../scripts/build.mjs";
 
@@ -16,8 +16,9 @@ export async function sourceFixture(t) {
   for (const name of ["scripts", "schema", "LICENSE"]) {
     await cp(path.join(REPO_ROOT, name), path.join(root, name), { recursive: true });
   }
-  for (const id of CATALOG_PLUGIN_IDS) {
-    await cp(path.join(REPO_ROOT, "plugins", id), path.join(root, "plugins", id), { recursive: true });
-  }
+  // This fixture exercises the original catalog; DrawAI's real package has a
+  // separate extracted-artifact suite and asset-path cases.
+  await mkdir(path.join(root, "plugins"));
+  for (const id of CATALOG_PLUGIN_IDS) await cp(path.join(REPO_ROOT, "plugins", id), path.join(root, "plugins", id), { recursive: true });
   return root;
 }

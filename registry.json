@@ -81,6 +81,22 @@
       "sha256": "a9e3175425a5f0f753808cb6961b70d1413d8e4e84a2edfa95294c23ee1c9a20"
     },
     {
+      "id": "drawai",
+      "name": "DrawAI 画布",
+      "version": "0.1.1",
+      "description": "独立窗口编辑 .drawio 流程图，支持 AI 读图改图、版本冲突保护和 SVG/PNG 导出。离线处理用户选定文件或会话工作区文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "独立画布：节点、连线、文字、图层与多页编辑",
+        "AI 读取和结构化改图，版本校验保护手工草稿",
+        "原生 .drawio 保存及当前页面 SVG/PNG 导出；不联网、不调用额外模型"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/drawai-0.1.1/drawai-0.1.1.zip",
+      "sha256": "7a6e4972a1a7e6092fdce8a4e7ec5666b3e530d349fde2ff0f3e0c9639c7dace"
+    },
+    {
       "id": "study-cards",
       "name": "学习卡片",
       "version": "0.1.1",

@@ -3,3 +3,4 @@ dist/
 .test-tmp-*/
 .npm-cache/
 *.log
+.drawai-qa/
