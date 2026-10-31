@@ -1,0 +1,11 @@
+{
+  "apiVersion": 1,
+  "id": "subtitle-tools",
+  "name": "字幕工具",
+  "version": "0.1.0",
+  "description": "离线检查 SRT/WebVTT 字幕时序、偏移时间并转换基础格式。不联网、不读写文件。",
+  "author": "Firefly-0423",
+  "entry": "index.cjs",
+  "defaultEnabled": false,
+  "deps": []
+}

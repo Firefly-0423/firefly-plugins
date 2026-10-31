@@ -81,6 +81,22 @@
       "sha256": "a9e3175425a5f0f753808cb6961b70d1413d8e4e84a2edfa95294c23ee1c9a20"
     },
     {
+      "id": "color-contrast",
+      "name": "颜色对比度",
+      "version": "0.1.0",
+      "description": "离线计算不透明 sRGB 颜色的 WCAG 2.2 对比度，检查单组或批量配色。不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "计算 sRGB 前景/背景颜色对比度，报告文字 AA/AAA 阈值",
+        "一次检查最多 50 对配色，统计普通文字 AA 未通过项",
+        "只接受不透明十六进制颜色；离线计算，不读写文件或执行命令"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/color-contrast-0.1.0/color-contrast-0.1.0.zip",
+      "sha256": "fb2ff0f4285b74b977b67f851b0ee7b7789a5b9e9fbb9533d9287e203b9d814f"
+    },
+    {
       "id": "drawai",
       "name": "DrawAI 画布",
       "version": "0.1.1",
@@ -111,6 +127,22 @@
       ],
       "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.1.1/study-cards-0.1.1.zip",
       "sha256": "1ed7ec9aea990319988dffc0100e5412682ef849d37a4ef0c3701599bb339d23"
+    },
+    {
+      "id": "subtitle-tools",
+      "name": "字幕工具",
+      "version": "0.1.0",
+      "description": "离线检查 SRT/WebVTT 字幕时序、偏移时间并转换基础格式。不联网、不读写文件。",
+      "author": "Firefly-0423",
+      "downloads": 0,
+      "pluginApiVersion": 1,
+      "capabilities": [
+        "检查字幕时间范围、重叠和乱序",
+        "按整数毫秒整体提前或延后，转换基础 SRT/WebVTT",
+        "不联网、不读写文件；拒绝负时间、溢出及有损格式转换"
+      ],
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/subtitle-tools-0.1.0/subtitle-tools-0.1.0.zip",
+      "sha256": "de7e04036cdb9f9c07bbaf2b6ab36701c0cd9dec56028aa700ac0f5eec7ea03f"
     }
   ]
 }
