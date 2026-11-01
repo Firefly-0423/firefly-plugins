@@ -2,6 +2,7 @@
  * main be9355b81988ebbfbdf45d9a7469a9a3a4f2d932:
  * src/renderer/react/styles/react-root.css and src/renderer/ui/glow.css.
  * Keep theme IDs/default aligned with src/shared/ui-theme.ts.
+ * Dark surfaces/green were subsequently refined for the plugin per user feedback (2026-11-01).
  */
 :root {
   color-scheme: light;
@@ -30,32 +31,35 @@
 }
 :root[data-ui-theme="firefly-dark"] {
   color-scheme: dark;
-  --ff-bg-page: #152420;
-  --ff-bg-workspace: #192a24;
-  --ff-bg-subtle: #213530;
-  --ff-bg-hover: #243a32;
-  --ff-bg-active: #2c463c;
-  --ff-surface: #1d302a;
-  /* glow.css applies these popup overrides after react-root.css. */
-  --ff-popover: #1b1e1d;
-  --ff-border: #2f4840;
-  --ff-text: #d5e0db;
-  --ff-text-secondary: #a9bbb2;
-  --ff-text-muted: #7f938a;
-  --ff-accent: #7bd8ae;
-  --ff-primary-bg: #318364;
+  /* Plugin refinement: neutral ink surfaces, with desaturated green reserved for accents. */
+  --ff-bg-page: #161b18;
+  --ff-bg-workspace: #1b201e;
+  --ff-bg-subtle: #202622;
+  --ff-bg-hover: #2b322e;
+  --ff-bg-active: #323c35;
+  --ff-surface: #222825;
+  --ff-popover: #222825;
+  --ff-border: #353e39;
+  --ff-text: #dae2dd;
+  --ff-text-secondary: #adb9b1;
+  --ff-text-muted: #97a59c;
+  --ff-accent: #8bbca6;
+  --ff-primary-bg: #426a58;
   --ff-danger: #f28b82;
-  --ff-success: #6fd6a4;
+  --ff-success: #8bbca6;
   --ff-scrim: rgba(0, 0, 0, 0.55);
   --ff-shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.45);
   --ff-shadow-bubble-neutral: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.28);
-  /* Match the host's quieter neutral reading area within its ink-green frame. */
-  --learning-main-bg: #1b1e1d;
-  --learning-surface: #222625;
-  --learning-popover-border: #3b4240;
+  --learning-main-bg: var(--ff-bg-workspace);
+  --learning-surface: var(--ff-surface);
 }
 :root {
   --ff-primary-bg-hover: color-mix(in srgb, var(--ff-primary-bg) 88%, black);
   --ff-scroll-thumb: color-mix(in srgb, var(--ff-text-muted) 34%, transparent);
   --learning-selection: color-mix(in srgb, var(--ff-accent) 24%, var(--learning-surface));
+  --learning-border: color-mix(in srgb, var(--ff-border) 76%, var(--learning-surface));
+  --learning-popover-border: var(--learning-border);
+  --learning-inset: color-mix(in srgb, var(--ff-bg-page) 55%, var(--learning-surface));
+  --learning-active: color-mix(in srgb, var(--ff-accent) 10%, var(--learning-surface));
+  --learning-card-shadow: 0 2px 10px color-mix(in srgb, var(--ff-text) 4%, transparent);
 }

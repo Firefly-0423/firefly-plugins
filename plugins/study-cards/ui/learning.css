@@ -3,7 +3,8 @@
   color: var(--ff-text);
   background: var(--ff-bg-workspace);
   font-size: 14px;
-  font-synthesis: none}
+  font-synthesis: none;
+}
 * {
   box-sizing: border-box
 }
@@ -19,10 +20,10 @@ button {
   border: 1px solid var(--ff-border);
   border-radius: 7px;
   padding: 9px 15px;
-  background: var(--ff-surface);
+  background: var(--learning-inset);
   color: var(--ff-text);
   cursor: pointer;
-  transition: background .15s
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 button:hover {
   background: var(--ff-bg-hover)
@@ -45,9 +46,9 @@ button.danger {
 }
 input,select,textarea {
   border: 1px solid var(--ff-border);
-  background: var(--ff-surface);
+  background: var(--learning-inset);
   color: var(--ff-text);
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 10px 12px;
   max-width: 100%
 }
@@ -70,7 +71,7 @@ h1,h2,h3,p {
   margin: 0
 }
 h1 {
-  font-size: 28px;
+  font-size: 26px;
   letter-spacing: -.6px;
   font-weight: 600
 }
@@ -126,12 +127,13 @@ h3 {
   font-size: 22px
 }
 .nav-label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-muted);
   padding: 0 13px;
   margin-bottom: 13px
 }
 .nav {
+  position: relative;
   width: 100%;
   border: 0;
   display: flex;
@@ -149,9 +151,19 @@ h3 {
   width: 19px
 }
 .nav.active {
-  background: var(--ff-bg-active);
+  background: var(--learning-active);
   color: var(--ff-accent);
   font-weight: 600
+}
+.nav.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15px;
+  bottom: 15px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--ff-accent);
 }
 .nav-note {
   font-size: 9px;
@@ -164,7 +176,7 @@ h3 {
   background: var(--ff-bg-hover);
   padding: 2px 7px;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 12px;
   margin-left: auto;
   min-width: 22px;
   text-align: center
@@ -180,7 +192,7 @@ h3 {
   font-weight: 500
 }
 .sidebar-bottom p {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   margin: 9px 0 20px
 }
@@ -191,7 +203,7 @@ h3 {
   margin-bottom: 15px
 }
 .local-badge {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   border: 1px solid var(--ff-border);
   border-radius: 20px;
@@ -226,7 +238,7 @@ main {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px
+  font-size: 12px
 }
 .privacy-dot {
   width: 5px;
@@ -236,7 +248,7 @@ main {
 }
 .top-actions button {
   margin-left: 12px;
-  font-size: 11px
+  font-size: 12px
 }
 .workspace {
   padding: 34px 36px 16px;
@@ -263,7 +275,7 @@ main {
   margin-top: 12px
 }
 .language-label {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-secondary);
   display: grid;
   gap: 8px;
@@ -285,7 +297,7 @@ main {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   min-width: 0
 }
 .article-select select {
@@ -293,14 +305,14 @@ main {
   background: none;
   max-width: 190px;
   padding: 6px;
-  font-size: 11px
+  font-size: 12px
 }
 .button-row {
   display: flex;
   gap: 8px
 }
 .button-row button {
-  font-size: 11px;
+  font-size: 12px;
   padding: 8px 12px
 }
 .text-button {
@@ -317,24 +329,24 @@ main {
 }
 .reader-card,.lookup-card {
   background: var(--learning-surface);
-  border: 1px solid var(--ff-border);
-  border-radius: 12px;
+  border: 1px solid var(--learning-border);
+  border-radius: 14px;
   overflow: hidden
 }
 .reader-card {
   padding: 30px 37px 0;
-  box-shadow: var(--ff-shadow-bubble-neutral)
+  box-shadow: var(--learning-card-shadow)
 }
 .article-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--ff-text-muted);
-  font-size: 10px;
+  font-size: 11px;
   margin-bottom: 19px
 }
 .tag {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: .3px;
   background: var(--ff-bg-hover);
   color: var(--ff-text-secondary);
@@ -381,15 +393,15 @@ main {
   align-items: center;
   padding: 16px 0;
   color: var(--ff-text-muted);
-  font-size: 10px;
+  font-size: 11px;
   gap: 10px
 }
 .reading-footer button {
-  font-size: 10px;
+  font-size: 11px;
   padding: 0
 }
 .lookup-card {
-  background: var(--ff-surface);
+  background: var(--learning-surface);
   padding: 21px 20px 0;
   position: sticky;
   top: 20px;
@@ -409,9 +421,9 @@ main {
 .search-box {
   display: flex;
   align-items: center;
-  background: var(--ff-surface);
-  border: 1px solid var(--ff-border);
-  border-radius: 6px;
+  background: var(--learning-inset);
+  border: 1px solid var(--learning-border);
+  border-radius: 8px;
   padding: 0 10px;
   color: var(--ff-text-secondary)
 }
@@ -420,7 +432,7 @@ main {
   flex: 1;
   border: 0;
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   padding: 11px 6px;
   outline: none
 }
@@ -452,11 +464,11 @@ main {
   color: var(--ff-text-secondary)
 }
 .lookup-empty p {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.9
 }
 .lookup-footnote {
-  font-size: 9px;
+  font-size: 11px;
   text-align: center;
   color: var(--ff-text-muted);
   border-top: 1px solid var(--ff-border);
@@ -480,12 +492,12 @@ main {
   margin-top: 7px
 }
 .speech {
-  font-size: 10px;
+  font-size: 11px;
   margin-left: auto;
   padding: 5px 8px
 }
 .voice-note {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   margin-top: 7px;
   line-height: 1.7
@@ -496,7 +508,7 @@ main {
   padding-top: 15px
 }
 .entry-source {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   line-height: 1.7;
   margin-bottom: 9px
@@ -510,34 +522,34 @@ main {
 }
 .entry button {
   width: 100%;
-  font-size: 11px;
+  font-size: 12px;
   margin: 14px 0 4px
 }
 .entry-context {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-secondary);
-  background: var(--ff-bg-subtle);
-  border-left: 2px solid var(--ff-border);
+  background: var(--learning-inset);
+  border-left: 2px solid color-mix(in srgb, var(--ff-accent) 32%, var(--learning-surface));
   padding: 10px 12px;
   margin: 15px 0;
   line-height: 1.8;
   overflow-wrap: anywhere
 }
 .entry-context small {
-  font-size: 9px;
+  font-size: 11px;
   display: block;
   letter-spacing: 1px;
   color: var(--ff-text-muted);
   margin-bottom: 4px
 }
 .notice {
-  background: var(--ff-bg-subtle);
-  border: 1px solid var(--ff-border);
+  background: var(--learning-inset);
+  border: 1px solid var(--learning-border);
   color: var(--ff-text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
-  padding: 10px 15px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
@@ -546,7 +558,7 @@ main {
 }
 .notice button {
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 11px;
   padding: 5px 9px
 }
 .summary-grid {
@@ -556,9 +568,9 @@ main {
   margin-bottom: 24px
 }
 .summary-grid>div {
-  border: 1px solid var(--ff-border);
+  border: 1px solid var(--learning-border);
   background: var(--learning-surface);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 22px;
   display: grid;
   gap: 10px
@@ -573,7 +585,7 @@ main {
 }
 .summary-grid small {
   color: var(--ff-text-muted);
-  font-size: 10px
+  font-size: 11px
 }
 .section-toolbar {
   display: flex;
@@ -583,13 +595,13 @@ main {
 .section-toolbar input {
   min-width: 100px;
   width: 160px;
-  font-size: 11px
+  font-size: 12px
 }
 .section-toolbar input:first-child {
   flex: 1
 }
 .section-toolbar select {
-  font-size: 11px;
+  font-size: 12px;
   max-width: 160px
 }
 .word-list {
@@ -598,8 +610,8 @@ main {
 }
 .word-row {
   background: var(--learning-surface);
-  border: 1px solid var(--ff-border);
-  border-radius: 10px;
+  border: 1px solid var(--learning-border);
+  border-radius: 14px;
   padding: 18px 22px;
   display: flex;
   align-items: start;
@@ -623,7 +635,7 @@ main {
 }
 .word-main small {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   margin-top: 7px
 }
@@ -632,7 +644,7 @@ main {
   gap: 7px
 }
 .word-actions button {
-  font-size: 10px;
+  font-size: 11px;
   padding: 6px 9px
 }
 .pagination {
@@ -640,19 +652,19 @@ main {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-secondary);
   margin-top: 24px
 }
 .pagination button {
   padding: 6px 12px;
-  font-size: 11px
+  font-size: 12px
 }
 .empty-state {
   padding: 64px 25px;
   text-align: center;
   background: var(--learning-surface);
-  border: 1px solid var(--ff-border);
+  border: 1px solid var(--learning-border);
   border-radius: 12px;
   color: var(--ff-text-secondary)
 }
@@ -680,20 +692,20 @@ main {
   font-size: 12px
 }
 .review-toolbar button {
-  font-size: 11px
+  font-size: 12px
 }
 .review-card {
   max-width: 740px;
   margin: 30px auto;
   text-align: center;
-  border: 1px solid var(--ff-border);
-  border-radius: 16px;
+  border: 1px solid var(--learning-border);
+  border-radius: 14px;
   background: var(--learning-surface);
   padding: 30px 45px;
   min-height: 370px
 }
 .review-progress {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   display: flex;
   justify-content: space-between;
@@ -732,7 +744,7 @@ main {
 }
 .rating-buttons small {
   display: block;
-  font-size: 9px;
+  font-size: 11px;
   opacity: .6;
   margin-top: 5px
 }
@@ -750,8 +762,8 @@ main {
   align-items: center;
   gap: 20px;
   background: var(--learning-surface);
-  border: 1px solid var(--ff-border);
-  border-radius: 12px;
+  border: 1px solid var(--learning-border);
+  border-radius: 14px;
   padding: 26px;
   margin-bottom: 18px
 }
@@ -760,7 +772,7 @@ main {
   margin-bottom: 10px
 }
 .dictionary-intro p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-secondary);
   line-height: 1.8
 }
@@ -771,10 +783,10 @@ main {
 .dictionary-note {
   display: flex;
   gap: 12px;
-  background: var(--ff-bg-subtle);
+  background: var(--learning-inset);
   color: var(--ff-text-secondary);
   padding: 14px 18px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.9;
   border-radius: 8px;
   margin: 18px 0
@@ -785,8 +797,8 @@ main {
   color: var(--ff-accent)
 }
 .dictionary-row {
-  border: 1px solid var(--ff-border);
-  border-radius: 10px;
+  border: 1px solid var(--learning-border);
+  border-radius: 14px;
   background: var(--learning-surface);
   margin: 12px 0;
   padding: 20px 22px
@@ -802,7 +814,7 @@ main {
   margin-bottom: 8px
 }
 .dictionary-row p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-secondary);
   line-height: 1.8;
   white-space: pre-wrap;
@@ -814,7 +826,7 @@ main {
   align-items: center
 }
 .dictionary-actions button {
-  font-size: 10px;
+  font-size: 11px;
   padding: 6px 9px
 }
 .dictionary-details {
@@ -824,14 +836,14 @@ main {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted)
 }
 .dictionary-attribution {
   margin-top: 10px;
   max-height: 100px;
   overflow: auto;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--ff-text-muted);
   white-space: pre-wrap;
   overflow-wrap: anywhere
@@ -851,11 +863,11 @@ main {
   font-weight: 500
 }
 .demo-section p {
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 8px
 }
 .demo-section button {
-  font-size: 11px;
+  font-size: 12px;
   background: var(--ff-bg-subtle)
 }
 .workspace-footer {
@@ -863,16 +875,16 @@ main {
   justify-content: space-between;
   align-items: center;
   color: var(--ff-text-muted);
-  font-size: 9px;
+  font-size: 11px;
   margin-top: 24px;
   letter-spacing: .5px
 }
 .muted {
   color: var(--ff-text-secondary);
-  font-size: 11px
+  font-size: 12px
 }
 .help {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--ff-text-secondary);
   line-height: 1.9;
   margin-top: 18px
@@ -883,7 +895,8 @@ main {
   left: calc(50% + 106px);
   transform: translateX(-50%);
   max-width: 650px;
-  background: var(--ff-popover);
+  background: var(--learning-surface);
+  border: 1px solid var(--learning-border);
   color: var(--ff-text);
   padding: 13px 24px;
   border-radius: 9px;
@@ -892,12 +905,12 @@ main {
   z-index: 30
 }
 .toast.error {
-  background: var(--ff-popover);
+  background: var(--learning-surface);
   color: var(--ff-danger);
   border: 1px solid var(--ff-danger)
 }
 dialog {
-  background: var(--ff-popover);
+  background: var(--learning-surface);
   border: 1px solid var(--learning-popover-border);
   border-radius: 14px;
   max-width: 610px;
@@ -1017,7 +1030,7 @@ dialog>p,dialog form>p {
     left: calc(50% + 87px)
   }
   .top-actions {
-    font-size: 10px
+    font-size: 11px
   }
   .section-toolbar {
     flex-wrap: wrap
@@ -1026,12 +1039,6 @@ dialog>p,dialog form>p {
     flex-direction: column
   }
 }
-@media(prefers-reduced-motion:reduce) {
-  * {
-    transition: none!important
-  }
-}
-
 input::placeholder, textarea::placeholder {
   color: var(--ff-text-muted);
   opacity: 1;
@@ -1045,7 +1052,7 @@ input::placeholder, textarea::placeholder {
 }
 .theme-label select {
   padding: 6px 9px;
-  font-size: 11px;
+  font-size: 12px;
   background: var(--ff-surface);
   color: var(--ff-text);
   border-color: var(--ff-border);
@@ -1066,7 +1073,7 @@ input::placeholder, textarea::placeholder {
   padding: 8px 12px;
   border: 1px solid var(--ff-danger);
   border-radius: 7px;
-  background: var(--ff-popover);
+  background: var(--learning-surface);
   color: var(--ff-danger);
   box-shadow: var(--ff-shadow-popover);
 }

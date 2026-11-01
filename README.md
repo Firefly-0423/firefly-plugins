@@ -31,7 +31,7 @@ DrawAI 当前仅有本地 ZIP，需在 Firefly 插件页导入后单独启用，
 
 画布窗口由 Firefly 的插件接口打开，AI 工具也注册到 Firefly 自身的模型工具链。普通用户安装使用无需运行下方的 Node.js/npm 开发命令，也无需安装 DSH。当前试用包为 DrawAI 0.1.1。
 
-语言学习 0.2.0 升级自学习卡片，保留旧卡片与七个原工具，新增英语、日语、韩语、法语、德语、西班牙语独立阅读窗口、Yomitan v3 本地词典、生词本和复习。可切换 Firefly 浅色/深色主题并记住选择。无需 Anki；本轮提供源码和本地 ZIP 预览，未发布 Release。详见 [插件说明](plugins/study-cards/README.md) 和 [功能验收](docs/validation/2026-10-31-learning-workbench.md)、[主题验收](docs/validation/2026-11-01-learning-themes.md)。
+语言学习 0.2.0 升级自学习卡片，保留旧卡片与七个原工具，新增英语、日语、韩语、法语、德语、西班牙语独立阅读窗口、Yomitan v3 本地词典、生词本和复习。浅色冷灰蓝、深色墨灰配低饱和薄荷绿，统一面板层次，提供尊重系统减少动态效果设置的过渡动画。无需 Anki；本轮提供源码和本地 ZIP 预览，未发布 Release。详见 [插件说明](plugins/study-cards/README.md) 和 [功能验收](docs/validation/2026-10-31-learning-workbench.md)、[主题验收](docs/validation/2026-11-01-learning-themes.md)、[面板与动效更新](docs/validation/2026-11-01-learning-polish.md)。
 
 ## 开发一个插件
 

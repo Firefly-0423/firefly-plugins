@@ -6,8 +6,8 @@ const {
   randomUUID
 } = require('node:crypto');
 const URL_ROOT = 'firefly-plugin://study-cards/';
-const ASSETS = new Set(['ui/index.html', 'ui/learning.css', 'ui/learning.js', 'ui/theme.css', 'ui/theme.js']);
-const THEMES = {'pearl-white':'#f5f6f9', 'firefly-dark':'#192a24'};
+const ASSETS = new Set(['ui/index.html', 'ui/learning.css', 'ui/learning.js', 'ui/theme.css', 'ui/theme.js', 'ui/motion.css']);
+const THEMES = {'pearl-white':'#f5f6f9', 'firefly-dark':'#1b201e'};
 const normalizeTheme = value => typeof value === 'string' && Object.hasOwn(THEMES, value) ? value : 'pearl-white';
 const FIELDS = {
   dashboard: [],

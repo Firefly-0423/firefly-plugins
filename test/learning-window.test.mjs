@@ -50,7 +50,7 @@ test('saved theme controls native background and first HTML paint, persists, and
   const {createLearningWindow}=require('../plugins/study-cards/runtime/window.cjs');
   const h=setup();h.storage.set('ui-theme','firefly-dark');
   let host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});await host.open();
-  assert.equal(h.windows[0].options.backgroundColor,'#192a24');
+  assert.equal(h.windows[0].options.backgroundColor,'#1b201e');
   assert.ok(h.windows[0].options.webPreferences.additionalArguments.includes('--learning-theme=firefly-dark'));
   const page=await h.assets({url:'firefly-plugin://study-cards/ui/index.html',method:'GET'});
   assert.match(await page.text(),/data-ui-theme="firefly-dark"/);

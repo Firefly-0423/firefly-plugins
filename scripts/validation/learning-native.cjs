@@ -20,6 +20,13 @@ async function main() {
   try {
     const page=await app.firstWindow({timeout:30000});page.on('pageerror',e=>errors.push(e.message));
     await page.waitForFunction(()=>!!window.Learning);
+    await page.evaluate(()=>{
+      window.nativeMotion={events:[],themeTransitions:0};
+      for(const kind of ['animationstart','transitionrun'])document.addEventListener(kind,event=>{
+        window.nativeMotion.events.push({kind,target:event.target.id||event.target.className,name:event.animationName||'',property:event.propertyName||''});
+      });
+      if(document.startViewTransition){const original=document.startViewTransition.bind(document);document.startViewTransition=update=>{window.nativeMotion.themeTransitions++;return original(update);};}
+    });
     await page.getByRole('button',{name:'试用示例',exact:true}).click();
     await page.waitForFunction(()=>document.getElementById('article-title').textContent==='The quiet joy of small beginnings');
     await page.locator('#article-text').evaluate(node=>{
@@ -42,9 +49,11 @@ async function main() {
         accent:getComputedStyle(document.documentElement).getPropertyValue('--ff-accent').trim(),
         scheme:getComputedStyle(document.documentElement).colorScheme,
       }));
-      assert.equal(colours.page,theme==='firefly-dark'?'rgb(25, 42, 36)':'rgb(245, 246, 249)');
-      assert.equal(colours.accent,theme==='firefly-dark'?'#7bd8ae':'#4d4e69');
-      assert.equal(colours.reader,theme==='firefly-dark'?'rgb(34, 38, 37)':'rgb(250, 251, 252)');
+      assert.equal(colours.page,theme==='firefly-dark'?'rgb(27, 32, 30)':'rgb(245, 246, 249)');
+      assert.equal(colours.accent,theme==='firefly-dark'?'#8bbca6':'#4d4e69');
+      assert.equal(colours.reader,theme==='firefly-dark'?'rgb(34, 40, 37)':'rgb(250, 251, 252)');
+      const lookupColour=await page.locator('.lookup-card').evaluate(node=>getComputedStyle(node).backgroundColor);
+      assert.equal(lookupColour,colours.reader,'Reader and lookup share a single panel tone');
       assert.equal(await page.locator('#article-text').textContent(),unchangedText);
       await page.evaluate(()=>Promise.all(document.getAnimations().map(animation=>animation.finished.catch(()=>{}))));
       await page.screenshot({path:path.join(qa,'learning-reader-'+theme+'.png'),fullPage:true});
@@ -52,10 +61,12 @@ async function main() {
     }
     await page.getByRole('button',{name:'＋ 留在生词本',exact:true}).first().click();
     const dialogColour=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).backgroundColor);
-    assert.equal(dialogColour,'rgb(27, 30, 29)');
+    assert.equal(dialogColour,'rgb(34, 40, 37)');
     const dialogBorder=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).borderTopColor);
-    assert.equal(dialogBorder,'rgb(59, 66, 64)');
-    await page.screenshot({path:path.join(qa,'learning-collect-dark.png'),fullPage:true});
+    const panelBorder=await page.locator('.reader-card').evaluate(node=>getComputedStyle(node).borderTopColor);
+    assert.equal(dialogBorder,panelBorder,'Dialog and panel borders share the same tone');
+    await page.evaluate(()=>Promise.all(document.getAnimations().map(animation=>animation.finished.catch(()=>{}))));
+    await page.screenshot({path:path.join(qa,'learning-collect-dark.png')});
     assert.ok((await page.locator('#collect-context').inputValue()).includes('quiet joy'));
     await page.locator('#collect-submit').click();await page.waitForFunction(()=>!document.getElementById('collect-dialog').open);
     assert.equal(await page.locator('#nav-words').textContent(),'1');
@@ -108,6 +119,25 @@ async function main() {
       }
     }
     const saved=await page.evaluate(()=>window.Learning.articleSave({title:'restart proof',language:'en',text:'quiet joy',position:3}));
+    const motion=await page.evaluate(()=>window.nativeMotion);
+    assert.ok(motion.themeTransitions>0,'Theme cross-fade used native view transitions');
+    assert.ok(motion.events.some(e=>e.kind==='animationstart' && e.target==='tab-words' && e.name==='learning-enter'),'Vocabulary tab entry animated');
+    assert.ok(motion.events.some(e=>e.kind==='transitionrun' && e.target==='collect-dialog' && e.property==='opacity'),'Native dialog opacity transitioned');
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await page.locator('#theme-select').selectOption('pearl-white');
+    await page.waitForFunction(()=>!document.getElementById('theme-select').disabled);
+    await page.locator('#theme-select').selectOption('firefly-dark');
+    await page.waitForFunction(()=>!document.getElementById('theme-select').disabled);
+    assert.equal(await page.evaluate(()=>window.nativeMotion.themeTransitions),motion.themeTransitions,'Reduced motion skips theme cross-fades');
+    await page.locator('[data-tab="reader"]').click();await page.locator('#paste-article').click();
+    const reduced=await page.evaluate(()=>({
+      dialogAnimations:document.getElementById('editor-dialog').getAnimations().length,
+      opacity:getComputedStyle(document.getElementById('editor-dialog')).opacity,
+      tabAnimation:getComputedStyle(document.getElementById('tab-reader')).animationName,
+    }));
+    assert.equal(reduced.dialogAnimations,0);assert.equal(reduced.opacity,'1');assert.equal(reduced.tabAnimation,'none');
+    await page.locator('#editor-dialog [aria-label="关闭"]').click();
+    await page.emulateMedia({reducedMotion:'no-preference'});
     const beforeRestart=await app.evaluate(async()=>{
       const {manager,tools}=global.learningQA;
       return {list:manager.list(),cards:JSON.parse(await tools.get('study-cards_list').execute({limit:40}))};
@@ -122,7 +152,7 @@ async function main() {
     assert.equal((await reopened.evaluate(()=>window.Learning.dashboard())).words,1);
     assert.equal((await reopened.evaluate(id=>window.Learning.articleGet({id}),saved.id)).position,3);
     assert.deepEqual(errors,[],'Renderer errors');
-    const result={passed:true,hostRoot,qa,hostInstall:beforeRestart.list,languages,voices,speech,real,themes:themeProof,themeReopen:true,dialogColour,dialogBorder,output};
+    const result={passed:true,hostRoot,qa,hostInstall:beforeRestart.list,languages,voices,speech,real,themes:themeProof,themeReopen:true,dialogColour,dialogBorder,motion,reduced,output};
     await fs.writeFile(path.join(qa,'native-result.json'),JSON.stringify(result,null,2));
     console.log('NATIVE_QA_OK '+qa+' '+JSON.stringify({languages:languages.length,real:real.length,speech}));
   }catch(error){await fs.writeFile(path.join(qa,'native-error.log'),String(error.stack)+'\n'+output.join(''));throw error;}
