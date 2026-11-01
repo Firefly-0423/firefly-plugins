@@ -28,8 +28,34 @@ async function main() {
     });
     await page.waitForSelector('.entry-meaning');
     assert.ok((await page.locator('.entry-context').textContent()).includes('quiet joy'));
-    await page.screenshot({path:path.join(qa,'learning-reader.png'),fullPage:true});
+    const themeProof=[];
+    const unchangedText=await page.locator('#article-text').textContent();
+    for(const theme of ['pearl-white','firefly-dark']) {
+      await page.locator('#theme-select').selectOption(theme);
+      await page.waitForFunction(choice=>document.documentElement.dataset.uiTheme===choice && !document.getElementById('theme-select').disabled,theme);
+      const colours=await page.evaluate(()=>({
+        theme:document.documentElement.dataset.uiTheme,
+        nativePreference:window.Learning.initialTheme,
+        page:getComputedStyle(document.documentElement).backgroundColor,
+        reader:getComputedStyle(document.querySelector('.reader-card')).backgroundColor,
+        sidebar:getComputedStyle(document.querySelector('.sidebar')).backgroundColor,
+        accent:getComputedStyle(document.documentElement).getPropertyValue('--ff-accent').trim(),
+        scheme:getComputedStyle(document.documentElement).colorScheme,
+      }));
+      assert.equal(colours.page,theme==='firefly-dark'?'rgb(25, 42, 36)':'rgb(245, 246, 249)');
+      assert.equal(colours.accent,theme==='firefly-dark'?'#7bd8ae':'#4d4e69');
+      assert.equal(colours.reader,theme==='firefly-dark'?'rgb(34, 38, 37)':'rgb(250, 251, 252)');
+      assert.equal(await page.locator('#article-text').textContent(),unchangedText);
+      await page.evaluate(()=>Promise.all(document.getAnimations().map(animation=>animation.finished.catch(()=>{}))));
+      await page.screenshot({path:path.join(qa,'learning-reader-'+theme+'.png'),fullPage:true});
+      themeProof.push(colours);
+    }
     await page.getByRole('button',{name:'＋ 留在生词本',exact:true}).first().click();
+    const dialogColour=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).backgroundColor);
+    assert.equal(dialogColour,'rgb(27, 30, 29)');
+    const dialogBorder=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).borderTopColor);
+    assert.equal(dialogBorder,'rgb(59, 66, 64)');
+    await page.screenshot({path:path.join(qa,'learning-collect-dark.png'),fullPage:true});
     assert.ok((await page.locator('#collect-context').inputValue()).includes('quiet joy'));
     await page.locator('#collect-submit').click();await page.waitForFunction(()=>!document.getElementById('collect-dialog').open);
     assert.equal(await page.locator('#nav-words').textContent(),'1');
@@ -89,10 +115,14 @@ async function main() {
     assert.equal(beforeRestart.cards.data.cards.length,1);assert.equal(beforeRestart.cards.data.cards[0].revision,2);
     await app.evaluate(async()=>{const {manager,tools}=global.learningQA;await manager.setEnabled('study-cards',false);if(tools.size)throw Error('Tools leaked');await manager.setEnabled('study-cards',true);await manager.open('study-cards');});
     const reopened=await app.firstWindow();await reopened.waitForFunction(()=>!!window.Learning);
+    assert.equal(await reopened.locator('html').getAttribute('data-ui-theme'),'firefly-dark');
+    assert.equal(await reopened.locator('#theme-select').inputValue(),'firefly-dark');
+    assert.equal(await reopened.evaluate(()=>window.Learning.initialTheme),'firefly-dark');
+    assert.equal((await reopened.evaluate(()=>window.Learning.getTheme())).theme,'firefly-dark');
     assert.equal((await reopened.evaluate(()=>window.Learning.dashboard())).words,1);
     assert.equal((await reopened.evaluate(id=>window.Learning.articleGet({id}),saved.id)).position,3);
     assert.deepEqual(errors,[],'Renderer errors');
-    const result={passed:true,hostRoot,qa,hostInstall:beforeRestart.list,languages,voices,speech,real,output};
+    const result={passed:true,hostRoot,qa,hostInstall:beforeRestart.list,languages,voices,speech,real,themes:themeProof,themeReopen:true,dialogColour,dialogBorder,output};
     await fs.writeFile(path.join(qa,'native-result.json'),JSON.stringify(result,null,2));
     console.log('NATIVE_QA_OK '+qa+' '+JSON.stringify({languages:languages.length,real:real.length,speech}));
   }catch(error){await fs.writeFile(path.join(qa,'native-error.log'),String(error.stack)+'\n'+output.join(''));throw error;}

@@ -9,6 +9,8 @@
     "ui/learning.css",
     "ui/learning.js",
     "ui/preload.cjs",
+    "ui/theme.css",
+    "ui/theme.js",
     "vendor/PROVENANCE.md",
     "vendor/pend/LICENSE",
     "vendor/pend/index.js",

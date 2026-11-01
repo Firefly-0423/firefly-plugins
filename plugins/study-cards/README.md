@@ -13,6 +13,7 @@ Firefly 原生学习插件：阅读文章、选择词语查词、收藏词义与
 3. 检查释义与来源，点「留在生词本」，编辑选定释义、例句后保存；一次保存同时创建生词和学习卡。
 4. 在「生词」搜索、筛选、编辑、删除；「复习」选择新卡或到期卡，揭晓答案后按真实感受评分。
 5. 保存文章以保留阅读位置。右上角导出卡片、生词、文章和词典信息 JSON；词典原始内容请保留本地 ZIP。
+6. 右上角「外观」切换浅色或深色，插件会记住选择。浅色采用 Firefly 冷灰蓝，深色采用流萤墨绿外框和中性阅读底色；弹窗、表单和初始窗口背景同时适配。
 
 ## 能力与限制
 
@@ -23,6 +24,7 @@ Firefly 原生学习插件：阅读文章、选择词语查词、收藏词义与
 - 合成朗读只使用系统实际提供、语言匹配且标记本地的语音。无可用语音时按钮禁用并说明原因；不会联网获取音频。系统合成语音不是流萤声线。
 - 词典图片、音频、样式、词频、音调及外部链接不会加载。结构化释义安全地转为纯文本；不支持内容在导入预览中报告。词典自身的许可和来源由用户核实，不随插件再分发第三方词库。
 - 本地词典索引和导入在后台 worker 执行。ZIP 上限 200 MiB、实际总展开 1 GiB、单 bank 64 MiB、2 百万词条；实际性能依设备和词典结构而异。拒绝路径穿越、重复别名、链接、加密、CRC 错误和超限。取消或失败不改变现有词典，确认后才添加。
+- 主题选择保存于本插件私有配置，默认浅色。参考 Firefly-Agent main 的两套默认配色，不读取宿主私有设置，不宣称跟随宿主的主题或自定义颜色实时同步。
 - 复习沿用原规则：重来 10 分钟；困难 1 天；良好至少 3 天或上次间隔的 2 倍；简单至少 7 天或 2.5 倍；上限 365 天。不是 Anki/FSRS 算法。卡片总量维持 1000 张。
 
 ## 数据与升级
@@ -47,3 +49,5 @@ Firefly 原生学习插件：阅读文章、选择词语查词、收藏词义与
 插件 MIT。独立实现 Yomitan v3 数据格式支持，没有复制 Yomitan GPL 产品代码；格式参考 [Yomitan 词典说明](https://github.com/yomidevs/yomitan/blob/master/docs/making-yomitan-dictionaries.md) 和 [v3 schema](https://github.com/yomidevs/yomitan/blob/master/ext/data/schemas/dictionary-term-bank-v3-schema.json)。词典数据的许可独立于插件许可。
 
 可读 ZIP 库 yauzl 3.4.0、pend 1.2.0 随包提供，均为 MIT；修改、来源及完整声明见 vendor/PROVENANCE.md 和对应 LICENSE。不依赖宿主私有 npm 模块，不在运行时安装依赖。分发沿用仓库源码、manifest 和资源清单，提交 PR 至 main；发布 Release 是独立操作。
+
+主题配色参考 [Firefly-Agent react-root.css](https://github.com/Firefly-0423/Firefly-Agent/blob/be9355b81988ebbfbdf45d9a7469a9a3a4f2d932/src/renderer/react/styles/react-root.css) 与 [glow.css](https://github.com/Firefly-0423/Firefly-Agent/blob/be9355b81988ebbfbdf45d9a7469a9a3a4f2d932/src/renderer/ui/glow.css)，MIT，Copyright (c) 2026 Firefly-0423。固定来源提交和主题标识见 ui/theme.css；运行时不读取宿主源码。

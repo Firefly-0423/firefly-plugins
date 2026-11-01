@@ -146,6 +146,7 @@ function createPlugin(options = {}) {
       if (!active || active.ctx.signal.aborted) throw new Error('请先启用语言学习插件');
       if (!windowHost) windowHost = (options.createWindow || require('./runtime/window.cjs').createLearningWindow)({
         service: active.service,
+        storage: active.ctx.storage,
         signal: active.ctx.signal
       });
       return windowHost.open();

@@ -6,7 +6,9 @@ const {
   randomUUID
 } = require('node:crypto');
 const URL_ROOT = 'firefly-plugin://study-cards/';
-const ASSETS = new Set(['ui/index.html', 'ui/learning.css', 'ui/learning.js']);
+const ASSETS = new Set(['ui/index.html', 'ui/learning.css', 'ui/learning.js', 'ui/theme.css', 'ui/theme.js']);
+const THEMES = {'pearl-white':'#f5f6f9', 'firefly-dark':'#192a24'};
+const normalizeTheme = value => typeof value === 'string' && Object.hasOwn(THEMES, value) ? value : 'pearl-white';
 const FIELDS = {
   dashboard: [],
   lookup: ['language', 'term', 'limit'],
@@ -61,6 +63,7 @@ async function readArticle(file) {
 }
 function createLearningWindow({
   service,
+  storage,
   signal,
   electron
 }) {
@@ -77,10 +80,19 @@ function createLearningWindow({
     current = null,
     releasing = Promise.resolve();
   const root = path.resolve(__dirname, '..');
+  const readTheme = () => normalizeTheme(storage.get('ui-theme'));
   function live() {
     if (disposed || signal?.aborted) throw new Error('学习插件已停用');
   }
   const actions = Object.fromEntries(Object.entries(FIELDS).map(([name, fields]) => [name, args => service.call(name, checkArgs(args, fields))]));
+  actions.getTheme = args => {checkArgs(args, []);return {theme:readTheme()};};
+  actions.setTheme = args => {
+    const {theme} = checkArgs(args, ['theme']);
+    if (typeof theme !== 'string' || !Object.hasOwn(THEMES, theme)) throw new Error('外观必须为浅色或深色');
+    storage.set('ui-theme', theme);
+    win.setBackgroundColor(THEMES[theme]);
+    return {theme};
+  };
   actions.chooseDictionary = async args => {
     const {
       language
@@ -229,7 +241,8 @@ function createLearningWindow({
         if (url.hostname !== 'study-cards' || url.search || url.hash || !ASSETS.has(asset) || request.method !== 'GET') return new Response(null, {
           status: 404
         });
-        const bytes = await fs.readFile(path.join(root, asset));
+        let bytes = await fs.readFile(path.join(root, asset));
+        if (asset === 'ui/index.html') bytes = Buffer.from(bytes.toString('utf8').replace('data-ui-theme="pearl-white"', 'data-ui-theme="' + readTheme() + '"'));
         const type = asset.endsWith('.html') ? 'text/html; charset=utf-8' : asset.endsWith('.css') ? 'text/css; charset=utf-8' : 'text/javascript; charset=utf-8';
         return new Response(bytes, {
           headers: {
@@ -247,7 +260,7 @@ function createLearningWindow({
         height: 880,
         minWidth: 940,
         minHeight: 650,
-        backgroundColor: '#f6f8f6',
+        backgroundColor: THEMES[readTheme()],
         autoHideMenuBar: true,
         show: false,
         webPreferences: {
@@ -257,7 +270,7 @@ function createLearningWindow({
           contextIsolation: true,
           nodeIntegration: false,
           webSecurity: true,
-          additionalArguments: ['--learning-channel=' + channel]
+          additionalArguments: ['--learning-channel=' + channel, '--learning-theme=' + readTheme()]
         }
       });
       const created = win;
