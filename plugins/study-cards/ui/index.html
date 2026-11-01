@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN" data-ui-theme="pearl-white">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>语言学习 · Firefly</title><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="learning.css"><link rel="stylesheet" href="motion.css"><script src="theme.js" defer></script><script src="learning.js" defer></script></head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">文</span><div>语言学习<small>FIREFLY LEARNING</small></div></div>
+    <div class="nav-label">你的学习空间</div>
+    <nav aria-label="学习导航">
+      <button class="nav active" data-tab="reader" aria-current="page"><span>▤</span>阅读<span class="nav-note">READ</span></button>
+      <button class="nav" data-tab="words"><span>◇</span>生词<span id="nav-words" class="count">0</span></button>
+      <button class="nav" data-tab="review"><span>◷</span>复习<span id="nav-review" class="count">0</span></button>
+      <button class="nav" data-tab="dictionaries"><span>▥</span>词典</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="small-dot"></div><strong>一点一点，读懂世界。</strong><p>把遇见的词，变成自己的词。</p><span class="local-badge">本地学习 · 无需账户</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>学习工作台 <span class="slash">/</span> <strong id="page-name">阅读</strong></span><div class="top-actions"><span class="privacy-dot"></span>内容保存在这台设备 <label class="theme-label">外观<select id="theme-select" aria-label="界面外观"><option value="pearl-white">浅色</option><option value="firefly-dark">深色</option></select></label><button id="export" class="text-button">导出数据 ↗</button></div><span id="theme-status" class="theme-status" role="status"></span></header>
+    <div class="workspace">
+      <section class="page-heading"><div><p class="eyebrow">A LITTLE, EVERY DAY</p><h1 id="page-title">从一篇喜欢的文章开始</h1><p id="page-subtitle">选中不熟悉的词，查一查，再把它留在生词本。</p></div><label class="language-label">学习语言<select id="language" aria-label="学习语言"><option value="en">English · 英语</option><option value="ja">日本語 · 日语</option><option value="ko">한국어 · 韩语</option><option value="fr">Français · 法语</option><option value="de">Deutsch · 德语</option><option value="es">Español · 西班牙语</option></select></label></section>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="tab-reader" class="tab">
+        <div class="reader-toolbar"><div class="article-select"><span class="muted">我的文章</span><select id="articles" aria-label="选择已保存文章"><option value="">未保存的阅读</option></select></div><div class="button-row"><button id="sample" class="text-button">试读示例</button><button id="open-article">打开文件</button><button id="paste-article">粘贴文章</button><button id="save-article" class="primary">保存文章</button></div></div>
+        <div class="reading-layout">
+          <article class="reader-card"><div class="article-meta"><span id="article-badge" class="tag">阅读区</span><span id="article-length"></span></div><h2 id="article-title">把想读的文字放在这里</h2><div class="article-rule"></div><div id="article-text" class="article-text" tabindex="0" aria-label="阅读文章，可选中词语查词"></div><footer class="reading-footer"><span>选择词语即可查词</span><button id="edit-article" class="text-button">编辑原文</button><span id="reading-position">0%</span></footer></article>
+          <aside class="lookup-card" aria-label="词语释义"><div class="lookup-heading"><h2>遇见一个新词</h2><span class="tag">查词</span></div><form id="lookup-form"><label class="sr-only" for="lookup-term">要查询的词语</label><div class="search-box"><span>⌕</span><input id="lookup-term" maxlength="200" autocomplete="off" placeholder="选中词语，或在这里输入"><button type="submit" aria-label="查询词语">↵</button></div></form><div id="lookup-results" aria-live="polite"><div class="lookup-empty"><span class="empty-symbol">Aa</span><h3>让阅读，多一点理解</h3><p>选中左侧的一个词，<br>释义和例句会出现在这里。</p></div></div><div class="lookup-footnote">精确查词 · 可尝试原形或调整选区</div></aside>
+        </div>
+      </section>
+      <section id="tab-words" class="tab" hidden><div class="summary-grid"><div><span>我的生词</span><strong id="stat-words">0</strong><small>在阅读中积累</small></div><div><span>新学习卡</span><strong id="stat-new">0</strong><small>等待第一次复习</small></div><div><span>今日到期</span><strong id="stat-due">0</strong><small>温故，然后知新</small></div></div><div class="section-toolbar"><input id="word-search" placeholder="搜索词语或释义" aria-label="搜索生词" maxlength="200"><select id="word-state" aria-label="生词状态"><option value="">全部状态</option><option value="new">未复习</option><option value="due">已到期</option><option value="learning">学习中</option></select><select id="word-source" aria-label="词典来源"><option value="">全部来源</option></select><input id="word-deck" placeholder="牌组（可选）" aria-label="按牌组筛选" maxlength="200"></div><div id="word-list" class="word-list"></div><div class="pagination"><button id="words-prev">上一页</button><span id="words-page"></span><button id="words-next">下一页</button></div></section>
+      <section id="tab-review" class="tab" hidden><div class="review-toolbar"><span class="muted">按已有的四档评分安排下次复习</span><select id="review-mode" aria-label="复习队列"><option value="due">到期卡片</option><option value="new">新卡片</option></select><button id="review-refresh">刷新队列</button></div><div id="review-card" class="review-card"></div></section>
+      <section id="tab-dictionaries" class="tab" hidden><div class="dictionary-intro"><div><h2>给你的阅读，添一本词典</h2><p>导入你有权使用的本地 Yomitan v3 词典。支持纯文本释义和结构化内容的安全文本化。</p></div><button id="import-dictionary" class="primary">＋ 导入词典</button></div><div class="dictionary-note"><span>i</span><p>当前支持所选词语的精确匹配与大小写候选，尚不包含完整词形还原。释义语言由词典决定；图片、音频、词频及样式不会加载。</p></div><div id="dictionary-list"></div><div class="demo-section"><div><strong>先体验一下？</strong><p>添加六种语言的小型演示词典，用示例文章走一遍查词与复习。</p></div><button id="install-demo">添加演示词典</button></div></section>
+      <footer class="workspace-footer"><span>FIREFLY · 语言学习</span><span>每次读懂一点，都算进步。</span></footer>
+    </div>
+  </main>
+  <dialog id="editor-dialog"><form id="editor-form"><div class="dialog-heading"><h2>放入你想读的文章</h2><button type="button" data-close="editor-dialog" class="icon-button" aria-label="关闭">×</button></div><label>文章标题<input id="editor-title" maxlength="200" required></label><label>原文<textarea id="editor-text" rows="12" required maxlength="1000000" placeholder="粘贴文章、故事、笔记……"></textarea></label><p class="muted">当前语言：<span id="editor-language"></span> · 文字仅保存在本地，按原文显示。</p><div class="dialog-actions"><button type="button" data-close="editor-dialog">取消</button><button type="submit" class="primary">开始阅读</button></div></form></dialog>
+  <dialog id="collect-dialog"><form id="collect-form"><div class="dialog-heading"><div><p class="eyebrow">SAVE A NEW WORD</p><h2 id="collect-title">留住这个词</h2></div><button type="button" data-close="collect-dialog" class="icon-button" aria-label="关闭">×</button></div><p id="collect-source" class="muted"></p><label>选定释义<textarea id="collect-meaning" rows="3" required maxlength="4000"></textarea></label><label>遇见它的句子<textarea id="collect-context" rows="3" maxlength="4000"></textarea></label><p class="help">保存后会同时创建学习卡，可在「复习」中练习。</p><div class="dialog-actions"><button type="button" data-close="collect-dialog">取消</button><button type="submit" class="primary" id="collect-submit">保存到生词本</button></div></form></dialog>
+  <dialog id="import-dialog"><div class="dialog-heading"><h2>导入词典</h2></div><div id="import-summary" aria-live="polite"></div><div class="dialog-actions"><button id="import-cancel">取消导入</button><button id="import-confirm" class="primary" disabled>确认添加</button></div></dialog>
+  <dialog id="confirm-dialog"><form method="dialog"><h2 id="confirm-title">确认删除？</h2><p id="confirm-detail"></p><div class="dialog-actions"><button value="cancel" autofocus>取消</button><button value="ok" class="danger">确认删除</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body></html>

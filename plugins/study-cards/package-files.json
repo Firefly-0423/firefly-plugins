@@ -1,0 +1,25 @@
+{
+  "files": [
+    "runtime/dictionaries.cjs",
+    "runtime/service.cjs",
+    "runtime/store.cjs",
+    "runtime/window.cjs",
+    "runtime/worker.cjs",
+    "ui/index.html",
+    "ui/learning.css",
+    "ui/learning.js",
+    "ui/motion.css",
+    "ui/preload.cjs",
+    "ui/theme.css",
+    "ui/theme.js",
+    "vendor/PROVENANCE.md",
+    "vendor/pend/LICENSE",
+    "vendor/pend/index.js",
+    "vendor/pend/package.json",
+    "vendor/yauzl/LICENSE",
+    "vendor/yauzl/crc32.js",
+    "vendor/yauzl/fd-slicer.js",
+    "vendor/yauzl/index.js",
+    "vendor/yauzl/package.json"
+  ]
+}

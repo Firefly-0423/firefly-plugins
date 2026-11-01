@@ -1,0 +1,65 @@
+/* Palette adapted from Firefly-Agent (MIT, Copyright (c) 2026 Firefly-0423).
+ * main be9355b81988ebbfbdf45d9a7469a9a3a4f2d932:
+ * src/renderer/react/styles/react-root.css and src/renderer/ui/glow.css.
+ * Keep theme IDs/default aligned with src/shared/ui-theme.ts.
+ * Dark surfaces/green were subsequently refined for the plugin per user feedback (2026-11-01).
+ */
+:root {
+  color-scheme: light;
+  --ff-bg-page: #eff1f5;
+  --ff-bg-workspace: #f5f6f9;
+  --ff-bg-subtle: #f0f2f6;
+  --ff-bg-hover: #e6e8ee;
+  --ff-bg-active: #dcdfe7;
+  --ff-surface: #fafbfc;
+  --ff-popover: #f1f2f6;
+  --ff-border: #dfe1e8;
+  --ff-text: #3d3e55;
+  --ff-text-secondary: #5b5c75;
+  --ff-text-muted: #828396;
+  --ff-accent: #4d4e69;
+  --ff-primary-bg: #4d4e69;
+  --ff-on-accent: #ffffff;
+  --ff-danger: #c0392b;
+  --ff-success: #3f8f5e;
+  --ff-scrim: rgba(31, 35, 48, 0.32);
+  --ff-shadow-popover: 0 8px 24px rgb(31 35 48 / 10%);
+  --ff-shadow-bubble-neutral: 2px 2px 3px rgba(31, 35, 48, 0.06), 3px 5px 16px rgba(31, 35, 48, 0.055);
+  --learning-main-bg: var(--ff-bg-workspace);
+  --learning-surface: var(--ff-surface);
+  --learning-popover-border: var(--ff-border);
+}
+:root[data-ui-theme="firefly-dark"] {
+  color-scheme: dark;
+  /* User-selected black ground with Firefly's official mint accent and primary green. */
+  --ff-bg-page: #080808;
+  --ff-bg-workspace: #000000;
+  --ff-bg-subtle: #141414;
+  --ff-bg-hover: #1b1b1b;
+  --ff-bg-active: #1f1f1f;
+  --ff-surface: #111111;
+  --ff-popover: #111111;
+  --ff-border: #2a2a2a;
+  --ff-text: #e7e7e7;
+  --ff-text-secondary: #b9b9b9;
+  --ff-text-muted: #a0a0a0;
+  --ff-accent: #7bd8ae;
+  --ff-primary-bg: #318364;
+  --ff-danger: #f28b82;
+  --ff-success: #6fd6a4;
+  --ff-scrim: rgba(0, 0, 0, 0.55);
+  --ff-shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --ff-shadow-bubble-neutral: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.28);
+  --learning-main-bg: var(--ff-bg-workspace);
+  --learning-surface: var(--ff-surface);
+}
+:root {
+  --ff-primary-bg-hover: color-mix(in srgb, var(--ff-primary-bg) 88%, black);
+  --ff-scroll-thumb: color-mix(in srgb, var(--ff-text-muted) 34%, transparent);
+  --learning-selection: color-mix(in srgb, var(--ff-accent) 24%, var(--learning-surface));
+  --learning-border: color-mix(in srgb, var(--ff-border) 76%, var(--learning-surface));
+  --learning-popover-border: var(--learning-border);
+  --learning-inset: color-mix(in srgb, var(--ff-bg-page) 55%, var(--learning-surface));
+  --learning-active: color-mix(in srgb, var(--ff-accent) 10%, var(--learning-surface));
+  --learning-card-shadow: 0 2px 10px color-mix(in srgb, var(--ff-text) 4%, transparent);
+}

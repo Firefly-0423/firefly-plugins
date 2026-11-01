@@ -1,0 +1,78 @@
+/* Short, interruptible visual feedback; no animation delays backend operations. */
+.tab:not([hidden]) {
+  animation: learning-enter 180ms ease-out both;
+}
+#lookup-results .result-term, #lookup-results .entry {
+  animation: learning-enter 160ms ease-out both;
+}
+.notice, .toast {
+  animation: learning-enter 160ms ease-out;
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.reader-card, .lookup-card, .word-row, .summary-grid > div, .dictionary-row {
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+.word-row:hover, .dictionary-row:hover {
+  border-color: color-mix(in srgb, var(--ff-accent) 24%, var(--learning-border));
+}
+dialog {
+  opacity: 0;
+  transform: translateY(8px) scale(.99);
+  transition: opacity 180ms ease, transform 180ms ease,
+    overlay 180ms allow-discrete, display 180ms allow-discrete;
+}
+dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+dialog::backdrop {
+  opacity: 0;
+  backdrop-filter: blur(3px);
+  transition: opacity 180ms ease, overlay 180ms allow-discrete, display 180ms allow-discrete;
+}
+dialog[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    transform: translateY(8px) scale(.99);
+  }
+  dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+::view-transition-group(root) {
+  animation: none;
+}
+::view-transition-old(root) {
+  animation: learning-fade-out 180ms ease both;
+}
+::view-transition-new(root) {
+  animation: learning-fade-in 180ms ease both;
+}
+@keyframes learning-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes learning-fade-out {
+  to { opacity: 0; }
+}
+@keyframes learning-fade-in {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  button:active:not(:disabled) {
+    transform: none;
+  }
+  dialog::backdrop {
+    backdrop-filter: none;
+  }
+}

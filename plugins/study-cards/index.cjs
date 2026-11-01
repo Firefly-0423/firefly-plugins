@@ -1,92 +1,157 @@
 'use strict';
 
-const { randomUUID } = require('node:crypto');
-const { existsSync } = require('node:fs');
-const { join } = require('node:path');
-const KEY = 'cards-v1';
-const DAY = 86400000;
-const LIMIT = 1000;
-const validText = (x, max) => typeof x === 'string' && x.trim().length > 0 && x.length <= max;
-
+const {
+  createService
+} = require('./runtime/service.cjs');
+const text = {
+    type: 'string'
+  },
+  revision = {
+    type: 'integer',
+    minimum: 1
+  };
+const language = {
+  type: 'string',
+  enum: ['en', 'ja', 'ko', 'fr', 'de', 'es']
+};
+const page = {
+  limit: {
+    type: 'integer',
+    minimum: 1,
+    maximum: 40
+  },
+  deck: text
+};
+const SPECS = [['create', '创建学习卡片', '在指定牌组创建本地问答卡，卡片内容由用户确认。', true, {
+  deck: text,
+  front: text,
+  back: text
+}, ['deck', 'front', 'back']], ['new', '读取新学习卡', '读取尚未复习的卡片。提问时不要提前显示答案。', false, page, ['limit']], ['due', '读取待复习卡', '读取已到复习时间的卡片。提问时不要提前显示答案。', false, page, ['limit']], ['review', '记录复习评分', '仅按用户明确选择记录评分：1 重来、2 困难、3 良好、4 简单。使用读取时的 revision。', true, {
+  cardId: text,
+  rating: {
+    type: 'integer',
+    minimum: 1,
+    maximum: 4
+  },
+  expectedRevision: revision
+}, ['cardId', 'rating', 'expectedRevision']], ['update', '编辑学习卡片', '修改卡片正面和背面，使用当前 revision；执行前确认内容。', true, {
+  cardId: text,
+  expectedRevision: revision,
+  front: text,
+  back: text
+}, ['cardId', 'expectedRevision', 'front', 'back']], ['delete', '删除学习卡片', '删除卡片及关联生词和复习状态；必须先向用户确认，使用当前 revision。', true, {
+  cardId: text,
+  expectedRevision: revision
+}, ['cardId', 'expectedRevision']], ['list', '浏览学习卡片', '按牌组和 offset 分页浏览卡片和当前 revision。', false, {
+  ...page,
+  offset: {
+    type: 'integer',
+    minimum: 0,
+    maximum: 1000
+  }
+}, ['limit']], ['lookup', '查询本地词典', '在已启用的本地词典中精确查词。支持 en/ja/ko/fr/de/es；未命中可调整选区或尝试原形。不会联网或生成释义。', false, {
+  language,
+  term: text,
+  limit: {
+    type: 'integer',
+    minimum: 1,
+    maximum: 40
+  }
+}, ['language', 'term']], ['collect', '收藏学习生词', '按用户确认的释义和例句创建生词及学习卡。每次用户操作提供唯一 operationId；同词同义复用已有卡。', true, {
+  language,
+  term: text,
+  reading: text,
+  meaning: text,
+  context: text,
+  dictionaryId: text,
+  operationId: text
+}, ['language', 'term', 'meaning', 'operationId']]];
 function createPlugin(options = {}) {
-  const now = options.now || Date.now;
-  let context;
-  const ids = ['study-cards_create', 'study-cards_new', 'study-cards_due', 'study-cards_review', 'study-cards_update', 'study-cards_delete', 'study-cards_list'];
-  function read() {
-    const state = context.storage.get(KEY);
-    if (state === undefined) {
-      if (typeof context.storage.rootDir === 'function' && existsSync(join(context.storage.rootDir(), KEY + '.json'))) throw new Error('卡片数据无法读取，未覆盖原文件');
-      return { version: 1, cards: [] };
-    }
-    const validCard = c => c && typeof c.id === 'string' && /^[0-9a-f-]{36}$/.test(c.id)
-      && validText(c.deck, 200) && validText(c.front, 4000) && validText(c.back, 4000)
-      && Number.isSafeInteger(c.reviews) && c.reviews >= 0 && c.reviews < Number.MAX_SAFE_INTEGER
-      && Number.isSafeInteger(c.revision) && c.revision >= 1 && c.revision < Number.MAX_SAFE_INTEGER
-      && Number.isSafeInteger(c.dueAt) && c.dueAt >= 0
-      && Number.isSafeInteger(c.interval) && c.interval >= 0 && c.interval <= 365 * DAY;
-    if (!state || state.version !== 1 || !Array.isArray(state.cards) || state.cards.length > LIMIT
-      || !state.cards.every(validCard) || new Set(state.cards.map(c => c.id)).size !== state.cards.length) {
-      throw new Error('卡片数据格式无效，未覆盖原文件');
-    }
-    return structuredClone(state);
+  let active, windowHost, closing;
+  async function cleanup() {
+    if (closing) return closing;
+    const previous = active;
+    if (!previous) return;
+    active = null;
+    for (const [action] of SPECS) previous.ctx.unregisterTool('study-cards_' + action);
+    const previousWindow = windowHost;
+    windowHost = null;
+    closing = (async () => {
+      try {
+        await previousWindow?.dispose();
+      } finally {
+        await previous.service.dispose();
+      }
+    })().finally(() => {
+      closing = null;
+    });
+    return closing;
   }
-  function save(state) {
-    try { context.storage.set(KEY, state); }
-    catch { const error = new Error('卡片保存失败，请检查存储后重新读取'); error.effectState = 'unknown'; throw error; }
-  }
-  function list(args, fresh) {
-    if (!Number.isInteger(args.limit) || args.limit < 1 || args.limit > 40) throw new Error('limit 必须为 1–40');
-    if (args.offset !== undefined && (!Number.isInteger(args.offset) || args.offset < 0 || args.offset > LIMIT)) throw new Error('offset 无效');
-    if (args.deck !== undefined && !validText(args.deck, 200)) throw new Error('牌组名称无效');
-    const cards = read().cards.filter(c => (args.deck === undefined || c.deck === args.deck) && (fresh === null || (fresh ? c.reviews === 0 : c.reviews > 0 && c.dueAt <= now())));
-    cards.sort((a, b) => a.dueAt - b.dueAt);
-    const offset = args.offset || 0;
-    return { total: cards.length, cards: cards.slice(offset, offset + args.limit).map(c => ({ cardId: c.id, deck: c.deck, front: c.front, back: c.back, dueAt: c.dueAt, revision: c.revision })) };
-  }
-  const spec = [
-    { id: ids[0], name: '创建学习卡片', description: '在指定牌组创建本地问答卡，卡片内容由用户确认。', write: true, props: { deck: { type: 'string' }, front: { type: 'string' }, back: { type: 'string' } }, required: ['deck','front','back'], run: args => {
-      if (!validText(args.deck, 200) || !validText(args.front, 4000) || !validText(args.back, 4000)) throw new Error('牌组、正面和背面必须是有效的非空文本');
-      const state = read(); if (state.cards.length >= LIMIT) throw new Error('卡片数量已达上限');
-      const card = { id: randomUUID(), deck: args.deck.trim(), front: args.front, back: args.back, dueAt: now(), reviews: 0, revision: 1, interval: 0 };
-      state.cards.push(card); save(state); return { cardId: card.id, revision: 1 };
-    } },
-    { id: ids[1], name: '读取新学习卡', description: '读取尚未复习的卡片。提问时不要提前显示答案。', write: false, props: { limit: { type: 'integer', minimum: 1, maximum: 40 }, deck: { type: 'string' } }, required: ['limit'], run: args => list(args, true) },
-    { id: ids[2], name: '读取待复习卡', description: '读取已到复习时间的卡片。提问时不要提前显示答案。', write: false, props: { limit: { type: 'integer', minimum: 1, maximum: 40 }, deck: { type: 'string' } }, required: ['limit'], run: args => list(args, false) },
-    { id: ids[3], name: '记录复习评分', description: '仅按用户明确选择记录评分：1 重来、2 困难、3 良好、4 简单。提供读取时的 revision 防止重复或过期写入。', write: true, props: { cardId: { type: 'string' }, rating: { type: 'integer', minimum: 1, maximum: 4 }, expectedRevision: { type: 'integer', minimum: 1 } }, required: ['cardId','rating','expectedRevision'], run: args => {
-      if (!validText(args.cardId, 100) || !Number.isInteger(args.rating) || args.rating < 1 || args.rating > 4 || !Number.isSafeInteger(args.expectedRevision) || args.expectedRevision < 1) throw new Error('卡片 ID、评分或版本无效');
-      const state = read(); const card = state.cards.find(c => c.id === args.cardId);
-      if (!card) throw new Error('卡片不存在');
-      if (args.expectedRevision !== card.revision) throw new Error('卡片版本已变化，请重新读取');
-      const intervals = [600000, DAY, Math.max(3 * DAY, card.interval * 2), Math.max(7 * DAY, card.interval * 2.5)];
-      card.interval = Math.min(365 * DAY, Math.round(intervals[args.rating - 1]));
-      card.dueAt = now() + card.interval; card.reviews++; card.revision++;
-      save(state); return { cardId: card.id, dueAt: card.dueAt, revision: card.revision };
-    } },
-    { id: ids[4], name: '编辑学习卡片', description: '修改指定卡片的正面和背面，使用当前 revision；执行前确认修改内容。', write: true, props: { cardId: { type: 'string' }, expectedRevision: { type: 'integer' }, front: { type: 'string' }, back: { type: 'string' } }, required: ['cardId','expectedRevision','front','back'], run: args => {
-      if (!validText(args.cardId, 100) || !Number.isSafeInteger(args.expectedRevision) || args.expectedRevision < 1 || !validText(args.front, 4000) || !validText(args.back, 4000)) throw new Error('卡片内容或版本无效');
-      const state = read(); const card = state.cards.find(c => c.id === args.cardId);
-      if (!card || card.revision !== args.expectedRevision) throw new Error('卡片不存在或版本已变化');
-      card.front = args.front; card.back = args.back; card.revision++;
-      save(state); return { cardId: card.id, revision: card.revision };
-    } },
-    { id: ids[5], name: '删除学习卡片', description: '删除指定卡片及其复习状态；必须先向用户确认，使用当前 revision。', write: true, props: { cardId: { type: 'string' }, expectedRevision: { type: 'integer' } }, required: ['cardId','expectedRevision'], run: args => {
-      if (!validText(args.cardId, 100) || !Number.isSafeInteger(args.expectedRevision) || args.expectedRevision < 1) throw new Error('卡片 ID 或版本无效');
-      const state = read(); const index = state.cards.findIndex(c => c.id === args.cardId);
-      if (index < 0 || state.cards[index].revision !== args.expectedRevision) throw new Error('卡片不存在或版本已变化');
-      state.cards.splice(index, 1); save(state); return { cardId: args.cardId };
-    } },
-    { id: ids[6], name: '浏览学习卡片', description: '按牌组和 offset 分页浏览所有卡片和当前 revision。', write: false, props: { limit: { type: 'integer', minimum: 1, maximum: 40 }, deck: { type: 'string' }, offset: { type: 'integer', minimum: 0, maximum: LIMIT } }, required: ['limit'], run: args => list(args, null) },
-  ];
-  async function cleanup() { if (context) for (const id of ids) context.unregisterTool(id); context = undefined; }
   return {
     async register(ctx) {
-      if (context) throw new Error('插件已启用'); context = ctx;
-      for (const tool of spec) ctx.registerTool({ id: tool.id, name: tool.name, description: tool.description, enabled: true, risk: tool.write ? 'fs-write' : 'fs-read', effectKind: tool.write ? 'mutation' : 'read', verificationPolicy: 'none', ledgerPolicy: 'bypass', inputSchema: { type: 'object', properties: tool.props, required: tool.required }, async execute(args) {
-        try { if (!context || context.signal.aborted) throw new Error('插件已停用'); if (!args || typeof args !== 'object' || Array.isArray(args) || Object.keys(args).some(k => !Object.hasOwn(tool.props, k))) throw new Error('工具参数无效'); return JSON.stringify({ ok: true, data: tool.run(args) }); }
-        catch (e) { return JSON.stringify({ ok: false, success: false, category: 'semantic_failure', retryable: false, effectState: e.effectState === 'unknown' ? 'unknown' : 'not_applied', error: String(e.message).slice(0, 250) }); }
-      } });
-      ctx.onDispose(cleanup);
-    }, unregister: cleanup,
+      if (active || closing) throw new Error('插件已启用或正在关闭');
+      if (typeof ctx.storage?.rootDir !== 'function') throw new Error('当前 Firefly 未提供插件私有存储目录');
+      const service = (options.createService || createService)({
+        rootDir: ctx.storage.rootDir(),
+        now: options.now || Date.now
+      });
+      const instance = {
+        ctx,
+        service
+      };
+      active = instance;
+      try {
+        for (const [action, name, description, write, properties, required] of SPECS) ctx.registerTool({
+          id: 'study-cards_' + action,
+          name,
+          description,
+          enabled: true,
+          risk: write ? 'fs-write' : 'fs-read',
+          effectKind: write ? 'mutation' : 'read',
+          verificationPolicy: 'none',
+          ledgerPolicy: 'bypass',
+          inputSchema: {
+            type: 'object',
+            properties,
+            required,
+            additionalProperties: false
+          },
+          async execute(args) {
+            try {
+              if (active !== instance || ctx.signal.aborted) throw new Error('插件已停用');
+              if (!args || typeof args !== 'object' || Array.isArray(args) || Object.keys(args).some(k => !Object.hasOwn(properties, k)) || required.some(k => !Object.hasOwn(args, k))) throw new Error('工具参数无效');
+              return JSON.stringify({
+                ok: true,
+                data: await service.call(action, args)
+              });
+            } catch (e) {
+              return JSON.stringify({
+                ok: false,
+                success: false,
+                category: 'semantic_failure',
+                retryable: false,
+                effectState: e.effectState === 'unknown' ? 'unknown' : 'not_applied',
+                error: String(e.message).slice(0, 250)
+              });
+            }
+          }
+        });
+        ctx.onDispose(cleanup);
+      } catch (e) {
+        await cleanup();
+        throw e;
+      }
+    },
+    async open() {
+      if (!active || active.ctx.signal.aborted) throw new Error('请先启用语言学习插件');
+      if (!windowHost) windowHost = (options.createWindow || require('./runtime/window.cjs').createLearningWindow)({
+        service: active.service,
+        storage: active.ctx.storage,
+        signal: active.ctx.signal
+      });
+      return windowHost.open();
+    },
+    unregister: cleanup
   };
 }
 module.exports = createPlugin();

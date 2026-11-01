@@ -98,19 +98,20 @@
     },
     {
       "id": "study-cards",
-      "name": "学习卡片",
-      "version": "0.1.1",
-      "description": "本地创建和复习学习卡片，按评分安排下次复习，无需 Anki 或外部服务。",
+      "name": "语言学习",
+      "version": "0.2.0",
+      "description": "六种语言的本地阅读、划词查词、词典导入、生词收藏与卡片复习，无需 Anki 或外部服务。",
       "author": "Firefly-0423",
       "downloads": 0,
       "pluginApiVersion": 1,
       "capabilities": [
-        "创建本地问答卡片，按牌组读取新卡及待复习卡",
-        "按用户评分计算下次复习时间",
-        "使用 Firefly 插件私有存储，不联网、不依赖 Anki"
+        "独立学习窗口：英语、日语、韩语、法语、德语、西班牙语阅读与划词查词",
+        "导入本地 Yomitan v3 词典，显示来源与释义语言；原创演示词典用于体验流程",
+        "收集生词和例句，自动创建学习卡；保留原七个卡片工具和评分规则",
+        "事务迁移旧卡片，私有本地保存、导出；无需 Anki 或外部服务"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.1.1/study-cards-0.1.1.zip",
-      "sha256": "1ed7ec9aea990319988dffc0100e5412682ef849d37a4ef0c3701599bb339d23"
+      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.2.0/study-cards-0.2.0.zip",
+      "sha256": "1af222a989fd5b3728e3459d756e4f00d0a40cfc0cfac9ab6701c636423bc6ca"
     }
   ]
 }
