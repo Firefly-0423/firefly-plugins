@@ -49,9 +49,9 @@ async function main() {
         accent:getComputedStyle(document.documentElement).getPropertyValue('--ff-accent').trim(),
         scheme:getComputedStyle(document.documentElement).colorScheme,
       }));
-      assert.equal(colours.page,theme==='firefly-dark'?'rgb(27, 32, 30)':'rgb(245, 246, 249)');
-      assert.equal(colours.accent,theme==='firefly-dark'?'#8bbca6':'#4d4e69');
-      assert.equal(colours.reader,theme==='firefly-dark'?'rgb(34, 40, 37)':'rgb(250, 251, 252)');
+      assert.equal(colours.page,theme==='firefly-dark'?'rgb(0, 0, 0)':'rgb(245, 246, 249)');
+      assert.equal(colours.accent,theme==='firefly-dark'?'#7bd8ae':'#4d4e69');
+      assert.equal(colours.reader,theme==='firefly-dark'?'rgb(17, 17, 17)':'rgb(250, 251, 252)');
       const lookupColour=await page.locator('.lookup-card').evaluate(node=>getComputedStyle(node).backgroundColor);
       assert.equal(lookupColour,colours.reader,'Reader and lookup share a single panel tone');
       assert.equal(await page.locator('#article-text').textContent(),unchangedText);
@@ -61,7 +61,7 @@ async function main() {
     }
     await page.getByRole('button',{name:'＋ 留在生词本',exact:true}).first().click();
     const dialogColour=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).backgroundColor);
-    assert.equal(dialogColour,'rgb(34, 40, 37)');
+    assert.equal(dialogColour,'rgb(17, 17, 17)');
     const dialogBorder=await page.locator('#collect-dialog').evaluate(node=>getComputedStyle(node).borderTopColor);
     const panelBorder=await page.locator('.reader-card').evaluate(node=>getComputedStyle(node).borderTopColor);
     assert.equal(dialogBorder,panelBorder,'Dialog and panel borders share the same tone');

@@ -31,22 +31,22 @@
 }
 :root[data-ui-theme="firefly-dark"] {
   color-scheme: dark;
-  /* Plugin refinement: neutral ink surfaces, with desaturated green reserved for accents. */
-  --ff-bg-page: #161b18;
-  --ff-bg-workspace: #1b201e;
-  --ff-bg-subtle: #202622;
-  --ff-bg-hover: #2b322e;
-  --ff-bg-active: #323c35;
-  --ff-surface: #222825;
-  --ff-popover: #222825;
-  --ff-border: #353e39;
-  --ff-text: #dae2dd;
-  --ff-text-secondary: #adb9b1;
-  --ff-text-muted: #97a59c;
-  --ff-accent: #8bbca6;
-  --ff-primary-bg: #426a58;
+  /* User-selected black ground with Firefly's official mint accent and primary green. */
+  --ff-bg-page: #080808;
+  --ff-bg-workspace: #000000;
+  --ff-bg-subtle: #141414;
+  --ff-bg-hover: #1b1b1b;
+  --ff-bg-active: #1f1f1f;
+  --ff-surface: #111111;
+  --ff-popover: #111111;
+  --ff-border: #2a2a2a;
+  --ff-text: #e7e7e7;
+  --ff-text-secondary: #b9b9b9;
+  --ff-text-muted: #a0a0a0;
+  --ff-accent: #7bd8ae;
+  --ff-primary-bg: #318364;
   --ff-danger: #f28b82;
-  --ff-success: #8bbca6;
+  --ff-success: #6fd6a4;
   --ff-scrim: rgba(0, 0, 0, 0.55);
   --ff-shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.45);
   --ff-shadow-bubble-neutral: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.28);

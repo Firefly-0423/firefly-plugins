@@ -111,7 +111,7 @@
         "事务迁移旧卡片，私有本地保存、导出；无需 Anki 或外部服务"
       ],
       "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.2.0/study-cards-0.2.0.zip",
-      "sha256": "d4957b2cb33b24b714d9daeb1adce38b41a02f547f5c80ac497dc07aad1c63fd"
+      "sha256": "1af222a989fd5b3728e3459d756e4f00d0a40cfc0cfac9ab6701c636423bc6ca"
     }
   ]
 }

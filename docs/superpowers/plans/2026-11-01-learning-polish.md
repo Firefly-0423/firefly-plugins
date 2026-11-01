@@ -20,3 +20,5 @@ Add150–200ms opacity/short-translation entry for tabs/results/notices, native 
 References: Firefly palette source remains be9355b; user requested adapted panel cohesion over literal mixed surface roles. Browser behavior checked against MDN Document.startViewTransition and HTML dialog animation documentation on2026-11-01. Acceptance limits and actual outputs go into a follow-up validation record.
 
 Verification ledger: final native7yx8wR passed motion and reduced-motion assertions;142 Node tests pass. Review ready-promise finding fixed RED→GREEN and rechecked; later user-directed palette change separately approved. Actual3.24s UI recording and refreshed screenshots accompany PR update. No changes outside this isolated worktree or production profile.
+
+Latest user instructions supersede the previous dark colour choices: black ground + official Firefly green. Use workspace#000000/frame#080808/panel#111111, host accent#7bd8ae and primary#318364 (verified against host react-root.css). Preserve the light palette, animations and all existing behavior; synchronize native background and refresh actual preview/verification in PR6.
