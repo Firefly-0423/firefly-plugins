@@ -1,1 +1,0 @@
-{"apiVersion":1,"id":"study-cards","name":"语言学习","version":"0.2.0","description":"六种语言的本地阅读、划词查词、词典导入、生词收藏与卡片复习，无需 Anki 或外部服务。","author":"Firefly-0423","entry":"index.cjs","defaultEnabled":false,"deps":[]}

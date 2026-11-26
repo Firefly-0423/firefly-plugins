@@ -3,7 +3,7 @@ import {readFile,mkdir,writeFile,copyFile} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-const root=fileURLToPath(new URL('../',import.meta.url)), target=path.join(root,'plugins/drawai');
+const root=fileURLToPath(new URL('../',import.meta.url)), target=path.join(root,'plugins/dev.firefly.drawai');
 const read=name=>readFile(path.join(root,'scripts/upstream/drawai',name.replaceAll('/','-')+'.txt'),'utf8');
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const check=process.argv.includes('--check'), records=[];

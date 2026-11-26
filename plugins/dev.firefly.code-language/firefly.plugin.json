@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.firefly.code-language",
+  "name": "代码语言识别",
+  "version": "2.0.0",
+  "sdk": "^1.2.0",
+  "description": "离线按文件扩展名识别源码、配置、脚本和标记文件的语法高亮语言，只看文件名，不读取文件内容。",
+  "author": {
+    "name": "Firefly-0423; adapted from deepseek-harness (MIT)"
+  },
+  "license": "MIT",
+  "main": "index.cjs",
+  "native": false,
+  "permissions": [],
+  "tools": [
+    {
+      "name": "detect",
+      "title": "代码语言识别",
+      "risk": ["fs-read"],
+      "modes": ["work", "code"]
+    }
+  ]
+}

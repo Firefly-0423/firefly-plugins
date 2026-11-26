@@ -11,7 +11,9 @@
   "packageManager": "npm@11.17.0",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/build.mjs --check",
+    "check": "node scripts/build.mjs --check && node scripts/build-repository-catalog.mjs --check && node scripts/verify-vendor-sdk.mjs",
+    "build:repository-catalog": "node scripts/build-repository-catalog.mjs",
+    "check:vendor": "node scripts/verify-vendor-sdk.mjs",
     "test": "node --test",
     "release": "node scripts/release.mjs",
     "new-plugin": "node scripts/new-plugin.mjs"

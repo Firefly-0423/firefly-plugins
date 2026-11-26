@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.firefly.study-cards",
+  "name": "语言学习",
+  "version": "0.3.0",
+  "sdk": "^1.2.0",
+  "description": "六种语言的本地阅读、划词查词、生词收藏与卡片复习，无需 Anki 或外部服务。",
+  "author": {
+    "name": "Firefly-0423"
+  },
+  "license": "MIT",
+  "main": "index.cjs",
+  "native": false,
+  "permissions": [
+    "ui.windows"
+  ],
+  "tools": [
+    {
+      "name": "create",
+      "title": "创建学习卡片",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "new",
+      "title": "读取新学习卡",
+      "risk": [
+        "fs-read"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "due",
+      "title": "读取待复习卡",
+      "risk": [
+        "fs-read"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "review",
+      "title": "记录复习评分",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "update",
+      "title": "编辑学习卡片",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "delete",
+      "title": "删除学习卡片",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "list",
+      "title": "浏览学习卡片",
+      "risk": [
+        "fs-read"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "lookup",
+      "title": "查询本地词典",
+      "risk": [
+        "fs-read"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "collect",
+      "title": "收藏学习生词",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    }
+  ],
+  "ui": {
+    "windows": [
+      {
+        "id": "workbench",
+        "entry": "ui/index.html",
+        "title": "语言学习 · Firefly",
+        "width": 1320,
+        "height": 880
+      }
+    ]
+  }
+}

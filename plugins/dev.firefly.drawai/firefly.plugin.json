@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "dev.firefly.drawai",
+  "name": "DrawAI 画布",
+  "version": "0.2.0",
+  "sdk": "^1.2.0",
+  "description": "独立窗口编辑 .drawio 流程图，支持 AI 读图改图、版本冲突保护和 SVG/PNG 导出。离线处理用户选定文件或会话工作区文件。",
+  "author": {
+    "name": "Firefly-0423; adapted from fourzkw/dsh-drawai (MIT)"
+  },
+  "license": "MIT",
+  "main": "index.cjs",
+  "native": false,
+  "tools": [
+    {
+      "name": "read",
+      "title": "读取 DrawAI 图",
+      "risk": [
+        "fs-read"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    },
+    {
+      "name": "apply",
+      "title": "修改 DrawAI 图",
+      "risk": [
+        "fs-write"
+      ],
+      "modes": [
+        "work",
+        "code"
+      ]
+    }
+  ],
+  "permissions": [
+    "workspace.read",
+    "ui.windows"
+  ],
+  "ui": {
+    "windows": [
+      {
+        "id": "canvas",
+        "entry": "ui/index.html",
+        "title": "DrawAI 画布",
+        "width": 1280,
+        "height": 820
+      }
+    ]
+  }
+}

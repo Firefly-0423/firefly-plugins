@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, writeFile, mkdir, link } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -7,7 +7,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 
 test('saving uses private staging and preserves existing POSIX permission bits', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const fs = createRequire(import.meta.url)('node:fs/promises');
     const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-permissions-'));
     const service = createDocumentService({ storageRoot: path.join(root, 'private') });
@@ -25,7 +25,7 @@ test('saving uses private staging and preserves existing POSIX permission bits',
 });
 
 test('failed atomic replacement keeps original bytes and the accepted draft', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const fs = createRequire(import.meta.url)('node:fs/promises');
     const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-write-failure-'));
     const service = createDocumentService({ storageRoot: path.join(root, 'private') });
@@ -45,8 +45,8 @@ test('failed atomic replacement keeps original bytes and the accepted draft', as
 });
 
 test('native no-op save preserves UTF-8 BOM bytes', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
-    const { runEngine } = createRequire(import.meta.url)('../plugins/drawai/runtime/worker-client.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
+    const { runEngine } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/worker-client.cjs');
     const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-bom-'));
     const made = await runEngine({ action: 'new', text: null });
     const file = path.join(root, 'bom.drawio'), bytes = Buffer.from('\ufeff' + made.text);
@@ -56,7 +56,7 @@ test('native no-op save preserves UTF-8 BOM bytes', async () => {
     finally { await service.stop(); }
 });
 test('save-as holds the source identity while AI edits the original path', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const fs = createRequire(import.meta.url)('node:fs/promises'), root = await mkdtemp(path.join(os.tmpdir(), 'drawai-saveas-')), storage = await mkdtemp(path.join(os.tmpdir(), 'drawai-saveas-state-')), service = createDocumentService({ storageRoot: storage }), context = { resolvedWorkspaceRoot: root };
     let release, entered;
     const gate = new Promise(r => release = r), atLink = new Promise(r => entered = r), originalLink = fs.link;
@@ -89,7 +89,7 @@ test('save-as holds the source identity while AI edits the original path', async
     }
 });
 test('new canvas recovery is bounded and cleared after explicit save, then stop rejects calls', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-recover-')), storage = await mkdtemp(path.join(os.tmpdir(), 'drawai-store-'));
     let service = createDocumentService({ storageRoot: storage });
     let ui = await service.newNative();
@@ -112,7 +112,7 @@ test('new canvas recovery is bounded and cleared after explicit save, then stop 
     }
 });
 test('pagination is tied to file revision and cancellation never creates target', async () => {
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const root = await mkdtemp(path.join(os.tmpdir(), 'drawai-pages-')), storage = await mkdtemp(path.join(os.tmpdir(), 'drawai-priv-')), service = createDocumentService({ storageRoot: storage }), context = { resolvedWorkspaceRoot: root };
     try {
         await service.agentApply(context, { path: 'many.drawio', create: true, ops: Array.from({ length: 60 }, (_, i) => ({ op: 'addNode', id: 'n' + i, label: String(i) })) });
@@ -132,8 +132,8 @@ test('pagination is tied to file revision and cancellation never creates target'
     }
 });
 test('document service coordinates UI drafts, AI, revision conflicts and recovery', async () => {
-    assert.ok(existsSync(new URL('../plugins/drawai/runtime/documents.cjs', import.meta.url)), 'document service missing');
-    const { createDocumentService } = createRequire(import.meta.url)('../plugins/drawai/runtime/documents.cjs');
+    assert.ok(existsSync(new URL('../plugins/dev.firefly.drawai/runtime/documents.cjs', import.meta.url)), 'document service missing');
+    const { createDocumentService } = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/documents.cjs');
     const root = await mkdtemp(path.join(os.tmpdir(), 'firefly-drawai-doc-')), storage = await mkdtemp(path.join(os.tmpdir(), 'firefly-drawai-state-'));
     const service = createDocumentService({ storageRoot: storage });
     try {

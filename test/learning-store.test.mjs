@@ -27,7 +27,7 @@ test('worker migrates valid legacy cards once and preserves bytes, grading and r
   await writeFile(join(rootDir, 'cards-v1.json'), bytes);
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   let s = createService({
     rootDir,
     now: () => 1000
@@ -67,7 +67,7 @@ test('corrupt legacy refuses all mutations and retries after repair', async t =>
   await writeFile(join(rootDir, 'cards-v1.json'), '{bad');
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   let s = createService({
     rootDir
   });
@@ -97,7 +97,7 @@ test('atomic collect deduplicates operations and NFC terms; edits conflict and c
   const rootDir = await fixture(t);
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   const s = createService({
     rootDir,
     now: () => 500
@@ -147,7 +147,7 @@ test('articles, exports, dashboard and cap retain learning data', async t => {
   const rootDir = await fixture(t);
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   const s = createService({
     rootDir
   });
@@ -183,7 +183,7 @@ test('vocabulary filters source deck and review state and includes current revie
   const rootDir = await fixture(t);
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   const s = createService({
     rootDir,
     now: () => 100
@@ -248,7 +248,7 @@ test('all original intervals and the 1000 card cap survive migrated library', as
   }));
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   const s = createService({
     rootDir,
     now: () => 100
@@ -284,5 +284,5 @@ test('all original intervals and the 1000 card cap survive migrated library', as
     offset: 990
   })).cards.length, 10);
 });
-test('service rejects uncloneable arguments without poisoning subsequent requests or disposal',async t=>{const rootDir=await fixture(t);const {createService}=require('../plugins/study-cards/runtime/service.cjs');const s=createService({rootDir});t.after(async()=>{await s.dispose();await rm(rootDir,{recursive:true,force:true});});await assert.rejects(s.call('create',{front:()=>{},back:'b',deck:'d'}));assert.equal((await s.call('dashboard')).cards,0);await Promise.all([s.dispose(),s.dispose()]);await assert.rejects(s.call('dashboard'),/停止/);});
-test('article limit counts UTF-8 bytes and leaves prior article unchanged',async t=>{const rootDir=await fixture(t);const {createService}=require('../plugins/study-cards/runtime/service.cjs');const s=createService({rootDir});t.after(async()=>{await s.dispose();await rm(rootDir,{recursive:true,force:true});});const {id}=await s.call('articleSave',{title:'a',language:'ja',text:'猫'});await assert.rejects(s.call('articleSave',{id,title:'a',language:'ja',text:'猫'.repeat(400000)}),/文本|MiB/);assert.equal((await s.call('articleGet',{id})).text,'猫');});
+test('service rejects uncloneable arguments without poisoning subsequent requests or disposal',async t=>{const rootDir=await fixture(t);const {createService}=require('../plugins/dev.firefly.study-cards/runtime/service.cjs');const s=createService({rootDir});t.after(async()=>{await s.dispose();await rm(rootDir,{recursive:true,force:true});});await assert.rejects(s.call('create',{front:()=>{},back:'b',deck:'d'}));assert.equal((await s.call('dashboard')).cards,0);await Promise.all([s.dispose(),s.dispose()]);await assert.rejects(s.call('dashboard'),/停止/);});
+test('article limit counts UTF-8 bytes and leaves prior article unchanged',async t=>{const rootDir=await fixture(t);const {createService}=require('../plugins/dev.firefly.study-cards/runtime/service.cjs');const s=createService({rootDir});t.after(async()=>{await s.dispose();await rm(rootDir,{recursive:true,force:true});});const {id}=await s.call('articleSave',{title:'a',language:'ja',text:'猫'});await assert.rejects(s.call('articleSave',{id,title:'a',language:'ja',text:'猫'.repeat(400000)}),/文本|MiB/);assert.equal((await s.call('articleGet',{id})).text,'猫');});

@@ -1,5 +1,7 @@
 {
-  "comment": "Mirrors src/plugins/api.ts (CURRENT_PLUGIN_API_VERSION) and src/shared/version.ts (SEMVER_PATTERN) from Firefly-0423/Firefly-Agent; copied from the v110 host on 2026-10-23. Update deliberately with host compatibility review.",
-  "pluginApiVersion": 1,
+  "comment": "Mirrors src/shared/plugin-manifest (Firefly 1.2.0) from Firefly-0423/Firefly-Agent.",
+  "schemaVersion": 1,
+  "sdkVersion": "1.2.0",
+  "idPattern": "^[a-z0-9]+(\\.[a-z0-9-]+){2,}$",
   "semverPattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
 }

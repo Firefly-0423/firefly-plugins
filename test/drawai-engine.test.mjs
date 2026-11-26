@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 test('no-op save keeps non-default compression bytes exactly', async () => {
     const { deflateRawSync } = await import('node:zlib');
@@ -42,7 +42,7 @@ import { mkdtemp, writeFile, readFile, symlink, link, mkdir } from 'node:fs/prom
 import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-const engine = createRequire(import.meta.url)('../plugins/drawai/runtime/worker-client.cjs').runEngine;
+const engine = createRequire(import.meta.url)('../plugins/dev.firefly.drawai/runtime/worker-client.cjs').runEngine;
 test('multi-page compressed and unknown XML survives no-op and localized edits', async () => {
     const made = await engine({ action: 'apply', text: null, ops: [{ op: 'addNode', id: 'a', label: '甲', x: 20, y: 30 }] });
     const { deflateRawSync } = await import('node:zlib');
@@ -72,8 +72,8 @@ test('engine rejects malformed, dangerous and excessive inputs; batch stays atom
         await assert.rejects(engine({ action: 'apply', text: null, ops }));
 });
 test('DrawAI ships an isolated worker engine', async () => {
-    assert.ok(existsSync(new URL('../plugins/drawai/runtime/worker-client.cjs', import.meta.url)), 'worker client is missing');
-    const { runEngine } = await import('../plugins/drawai/runtime/worker-client.cjs');
+    assert.ok(existsSync(new URL('../plugins/dev.firefly.drawai/runtime/worker-client.cjs', import.meta.url)), 'worker client is missing');
+    const { runEngine } = await import('../plugins/dev.firefly.drawai/runtime/worker-client.cjs');
     const made = await runEngine({ action: 'apply', text: null, ops: [{ op: 'addNode', id: 'a', label: '开始', x: 10, y: 20 }, { op: 'addNode', id: 'b', label: '结束', x: 250, y: 20 }, { op: 'addEdge', id: 'e', from: 'a', to: 'b' }] });
     assert.match(made.text, /<mxfile/);
     assert.equal(made.doc.nodes.length, 2);

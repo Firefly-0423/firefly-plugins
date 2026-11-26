@@ -57,7 +57,7 @@ async function setup(t) {
   const rootDir = await mkdtemp(join(tmpdir(), 'learning-dict-'));
   const {
     createService
-  } = require('../plugins/study-cards/runtime/service.cjs');
+  } = require('../plugins/dev.firefly.study-cards/runtime/service.cjs');
   const s = createService({
     rootDir
   });

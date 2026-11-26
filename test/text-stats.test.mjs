@@ -1,109 +1,111 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 import test from "node:test";
-import vm from "node:vm";
-import { fileURLToPath } from "node:url";
+import {
+  createTestHost,
+  loadPlugin,
+  manifestErrors,
+  readManifest,
+  sandboxHost,
+} from "./plugin-fixture.mjs";
 
+const PLUGIN_ID = "dev.firefly.text-stats";
 
-const entry = new URL("../plugins/text-stats/index.cjs", import.meta.url);
-const manifestPath = new URL("../plugins/text-stats/manifest.json", import.meta.url);
-const require = createRequire(import.meta.url);
-const Ajv = require("ajv");
-
-
-function pluginWithContext() {
-  assert.ok(existsSync(entry), "text-stats plugin entry must exist");
-  const plugin = require(fileURLToPath(entry));
-  const tools = new Map();
-  const ctx = {
-    registerTool(tool) {
-      assert.equal(tools.has(tool.id), false, "duplicate tool registration");
-      tools.set(tool.id, tool);
-    },
-    unregisterTool(id) {
-      assert.equal(tools.delete(id), true, "unregister only an owned tool");
-    },
-  };
-  return { plugin, ctx, tools };
-}
-
-async function toolFixture(t) {
-  const fixture = pluginWithContext();
-  t.after(() => fixture.plugin.unregister());
-  await fixture.plugin.register(fixture.ctx);
-  assert.equal(fixture.tools.size, 1);
-  return fixture.tools.get("text-stats_count");
-}
-
-test("text-stats manifest matches the actual host schema and disabled API v1 contract", () => {
-  assert.ok(existsSync(manifestPath), "text-stats manifest must exist");
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  const schema = JSON.parse(readFileSync(new URL("../schema/manifest.schema.json", import.meta.url), "utf8"));
-  const validate = new Ajv({ strict: false }).compile(schema);
-  assert.equal(validate(manifest), true, JSON.stringify(validate.errors));
-  assert.equal(manifest.id, "text-stats");
-  assert.match(manifest.version, new RegExp(JSON.parse(readFileSync(new URL("../schema/host-contract.json", import.meta.url), "utf8")).semverPattern));
-  assert.equal(manifest.apiVersion, 1);
-  assert.equal(manifest.defaultEnabled, false);
-  assert.equal(manifest.entry, "index.cjs");
-  assert.deepEqual(manifest.deps ?? [], []);
+test("text-stats manifest matches the 1.2.0 schema with reverse-domain id and no 0.x fields", () => {
+  const manifest = readManifest(PLUGIN_ID);
+  assert.deepEqual(manifestErrors(manifest), []);
+  assert.equal(manifest.schemaVersion, 1);
+  assert.equal(manifest.id, PLUGIN_ID);
+  assert.equal(manifest.sdk, "^1.2.0");
+  assert.equal(manifest.main, "index.cjs");
+  assert.equal(manifest.native, false);
+  assert.deepEqual(manifest.permissions, []);
+  assert.deepEqual(manifest.tools, [
+    { name: "count", title: "文本统计", risk: ["fs-read"], modes: ["work", "code"] },
+  ]);
+  assert.match(
+    manifest.version,
+    new RegExp(JSON.parse(readFileSync(new URL("../schema/host-contract.json", import.meta.url), "utf8")).semverPattern),
+  );
 });
 
-test("registers a safe read-only SDK-shaped text tool", async t => {
-  const tool = await toolFixture(t);
-  assert.equal(tool.risk, "safe");
-  assert.equal(tool.effectKind, "read");
-  assert.equal(tool.verificationPolicy, "none");
-  assert.equal(tool.enabled, true);
-  assert.ok(tool.name && tool.description);
-  assert.deepEqual(tool.inputSchema.required, ["text"]);
-  assert.equal(tool.inputSchema.properties.text.type, "string");
-  const result = await tool.execute({ text: "Hello world\nSecond line" });
-  assert.equal(typeof result, "string");
-  assert.deepEqual(JSON.parse(result), { characters: 23, words: 4, nonEmptyLines: 2 });
-});
+test("counts Unicode code points, whitespace-separated words, and nonempty lines via createTestHost", async t => {
+  const manifest = readManifest(PLUGIN_ID);
+  const plugin = await loadPlugin(PLUGIN_ID);
+  const host = createTestHost({ manifest, mode: "work", level: "read-only" });
+  await host.activate(plugin);
+  t.after(() => host.deactivate("disabled"));
 
-test("counts Unicode code points, whitespace-separated words, and nonempty lines", async t => {
-  const tool = await toolFixture(t);
-  assert.deepEqual(JSON.parse(await tool.execute({ text: "A😀 e\u0301\r\n\t\r世界\u2028x\u2029 " })), {
-    characters: 15, words: 4, nonEmptyLines: 3,
+  assert.deepEqual(await host.callTool("count", { text: "Hello world\nSecond line" }), {
+    status: "succeeded",
+    output: { characters: 23, words: 4, nonEmptyLines: 2 },
+    summary: "23 字符，4 词，2 非空行",
   });
-  assert.deepEqual(JSON.parse(await tool.execute({ text: "" })), { characters: 0, words: 0, nonEmptyLines: 0 });
-  assert.deepEqual(JSON.parse(await tool.execute({ text: " \t\r\n" })), { characters: 4, words: 0, nonEmptyLines: 0 });
+  assert.deepEqual((await host.callTool("count", { text: "A😀 e\u0301\r\n\t\r世界\u2028x\u2029 " })).output, {
+    characters: 15,
+    words: 4,
+    nonEmptyLines: 3,
+  });
+  assert.deepEqual((await host.callTool("count", { text: "" })).output, {
+    characters: 0,
+    words: 0,
+    nonEmptyLines: 0,
+  });
+  assert.deepEqual((await host.callTool("count", { text: " \t\r\n" })).output, {
+    characters: 4,
+    words: 0,
+    nonEmptyLines: 0,
+  });
 });
 
-test("rejects missing or non-string text rather than coercing data", async t => {
-  const tool = await toolFixture(t);
-  for (const args of [{}, { text: 3 }, { text: null }, null, undefined, { text: ["hello"] }]) {
-    await assert.rejects(tool.execute(args), /text must be a string/);
+test("rejects invalid arguments, chat mode, approval rejection, and pre-aborted signals without execution", async () => {
+  const manifest = readManifest(PLUGIN_ID);
+  const plugin = await loadPlugin(PLUGIN_ID);
+  let approvalCalls = 0;
+  const host = createTestHost({
+    manifest,
+    mode: "work",
+    level: "per-action",
+    approvalDecision: () => {
+      approvalCalls++;
+      return "reject";
+    },
+  });
+  await host.activate(plugin);
+
+  const rejected = await host.callTool("count", { text: "hello" });
+  assert.equal(rejected.status, "not_executed");
+  assert.match(rejected.reason, /ERR_REJECTED/);
+  assert.equal(approvalCalls, 1);
+
+  host.setMode("chat");
+  const chatBlocked = await host.callTool("count", { text: "hello" });
+  assert.equal(chatBlocked.status, "not_executed");
+  assert.equal(approvalCalls, 1);
+
+  host.setMode("work");
+  host.setLevel("full");
+  for (const badArgs of [{}, { text: 3 }, { text: null }, { text: ["hello"] }]) {
+    const res = await host.callTool("count", badArgs);
+    assert.equal(res.status, "not_executed");
+    assert.match(res.reason, /ERR_INVALID_ARGUMENT/);
   }
+
+  const ac = new AbortController();
+  ac.abort("stop");
+  const cancelled = await host.callTool("count", { text: "hello" }, { signal: ac.signal });
+  assert.equal(cancelled.status, "not_executed");
+
+  await host.deactivate("disabled");
+  assert.equal(host.status, "deactivated");
+  const afterDeactivate = await host.callTool("count", { text: "hello" });
+  assert.equal(afterDeactivate.status, "not_executed");
 });
 
-test("unregister is idempotent, releases the tool, and allows re-enable", async () => {
-  const { plugin, ctx, tools } = pluginWithContext();
-  await plugin.register(ctx);
-  await plugin.unregister();
-  assert.equal(tools.size, 0);
-  await plugin.unregister();
-  await plugin.register(ctx);
-  assert.equal(tools.size, 1);
-  await plugin.unregister();
-  assert.equal(tools.size, 0);
-});
-
-test("plugin loads and counts without any Node, network, filesystem, or timer globals", async () => {
-  assert.ok(existsSync(entry), "text-stats plugin entry must exist");
-  const sandbox = { module: { exports: {} } };
-  vm.runInNewContext(readFileSync(entry, "utf8"), sandbox, { timeout: 1000 });
-  const tools = new Map();
-  await sandbox.module.exports.register({
-    registerTool: tool => tools.set(tool.id, tool),
-    unregisterTool: id => tools.delete(id),
-  });
-  assert.deepEqual(JSON.parse(await tools.get("text-stats_count").execute({ text: "offline 😀" })), {
-    characters: 9, words: 2, nonEmptyLines: 1,
-  });
-  await sandbox.module.exports.unregister();
-  assert.equal(tools.size, 0);
+test("loads and counts in isolated VM without Node, network, filesystem, or timer globals", async () => {
+  const { host } = await sandboxHost(PLUGIN_ID);
+  const res = await host.callTool("count", { text: "offline 😀" });
+  assert.deepEqual(structuredClone(res.output), { characters: 9, words: 2, nonEmptyLines: 1 });
+  await host.deactivate("disabled");
+  assert.equal(host.calls.some((c) => c.method === "tools.unregister"), true);
 });

@@ -1,117 +1,303 @@
 {
-  "apiVersion": 1,
+  "apiVersion": 2,
   "plugins": [
     {
-      "id": "text-stats",
+      "id": "dev.firefly.text-stats",
       "name": "文本统计",
-      "version": "1.0.1",
+      "version": "2.0.0",
+      "sdk": "^1.2.0",
       "description": "离线统计文本的 Unicode 字符数、空白分隔词数和非空行数，不联网、不读写文件。",
       "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "license": "MIT",
+      "native": false,
+      "permissions": [],
+      "tools": [
+        {
+          "name": "count",
+          "title": "文本统计",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "Unicode 字符、空白分隔词和非空行统计",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/text-stats-1.0.1/text-stats-1.0.1.zip",
-      "sha256": "7ecf64d2f6f2437c9bbac8ec69faf5b1f9ed7829360f25c38f1c6d851f0ceeab"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.text-stats-2.0.0/dev.firefly.text-stats-2.0.0.ffplugin",
+      "sha256": "1bcc4cccf4fadd438c454c4d2f3d3706a798651cc0b663eb9ffb874f14d35419"
     },
     {
-      "id": "json-tools",
+      "id": "dev.firefly.json-tools",
       "name": "JSON 工具",
-      "version": "1.0.1",
+      "version": "2.0.0",
+      "sdk": "^1.2.0",
       "description": "离线校验 JSON 是否合法且无损，并按结构比较两段 JSON、报告第一处差异路径。不联网、不读写文件。",
-      "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "license": "MIT",
+      "native": false,
+      "permissions": [],
+      "tools": [
+        {
+          "name": "validate",
+          "title": "JSON 校验",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "compare",
+          "title": "JSON 比较",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "JSON 语法与无损校验（负零、溢出数字）",
         "两段 JSON 的结构比较与首处差异路径",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/json-tools-1.0.1/json-tools-1.0.1.zip",
-      "sha256": "2518b63cbc3bdbb3fcb9206a42a6f036af989f0925871c6c92514b7ba1940668"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.json-tools-2.0.0/dev.firefly.json-tools-2.0.0.ffplugin",
+      "sha256": "825a6dc793b25c38ab9e90e53638d2ff9e031c6f85f942c4dbc6919c01342776"
     },
     {
-      "id": "timezone-tools",
+      "id": "dev.firefly.timezone-tools",
       "name": "时区工具",
-      "version": "1.0.1",
+      "version": "2.0.0",
+      "sdk": "^1.2.0",
       "description": "离线校验 IANA 时区名，并在时区之间换算时间（处理夏令时空档与重复时刻）。不联网、不读写文件。",
-      "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "license": "MIT",
+      "native": false,
+      "permissions": [],
+      "tools": [
+        {
+          "name": "canonicalize",
+          "title": "时区名校验",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "convert",
+          "title": "时区换算",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "IANA 时区名校验与规范化",
         "时区间时间换算，识别夏令时空档与重复时刻",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/timezone-tools-1.0.1/timezone-tools-1.0.1.zip",
-      "sha256": "5438ba4a88cda3747b3db159813f582038e042ad6150f5fbd507545f8b3e4ae5"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.timezone-tools-2.0.0/dev.firefly.timezone-tools-2.0.0.ffplugin",
+      "sha256": "fee97f7ea6f8892aac4695b85ad76494f0dafe63127365401f0174d790124e65"
     },
     {
-      "id": "code-language",
+      "id": "dev.firefly.code-language",
       "name": "代码语言识别",
-      "version": "1.0.1",
+      "version": "2.0.0",
+      "sdk": "^1.2.0",
       "description": "离线按文件扩展名识别源码、配置、脚本和标记文件的语法高亮语言，只看文件名，不读取文件内容。",
-      "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "license": "MIT",
+      "native": false,
+      "permissions": [],
+      "tools": [
+        {
+          "name": "detect",
+          "title": "代码语言识别",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "按扩展名识别 61 种语言的语法高亮 id 和短名",
         "只看文件名，不读取文件内容",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/code-language-1.0.1/code-language-1.0.1.zip",
-      "sha256": "e89243dedc4b3803162c10b80688c9e49f91165bb56f4a93208b6343783e8e53"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.code-language-2.0.0/dev.firefly.code-language-2.0.0.ffplugin",
+      "sha256": "0543dcb0621ba7904ea1a5556b0514e676c5305561de4504c13c2759344701a1"
     },
     {
-      "id": "text-trim",
+      "id": "dev.firefly.text-trim",
       "name": "文本截断",
-      "version": "1.0.1",
+      "version": "2.0.0",
+      "sdk": "^1.2.0",
       "description": "离线把长文本按 UTF-8 字节预算截断为开头、结尾或两端，落在完整字符边界上并报告确切丢弃的字节数。不联网、不读写文件。",
-      "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "license": "MIT",
+      "native": false,
+      "permissions": [],
+      "tools": [
+        {
+          "name": "cap",
+          "title": "文本截断",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "按 UTF-8 字节预算保留开头、结尾或两端",
         "截断落在完整字符边界上，报告确切丢弃的字节数",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/text-trim-1.0.1/text-trim-1.0.1.zip",
-      "sha256": "a9e3175425a5f0f753808cb6961b70d1413d8e4e84a2edfa95294c23ee1c9a20"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.text-trim-2.0.0/dev.firefly.text-trim-2.0.0.ffplugin",
+      "sha256": "fb3d14e003a92bf93dc4b3cc9d4bebb6fab1973bc10072eebba27938c1656863"
     },
     {
-      "id": "drawai",
-      "name": "DrawAI 画布",
-      "version": "0.1.1",
-      "description": "独立窗口编辑 .drawio 流程图，支持 AI 读图改图、版本冲突保护和 SVG/PNG 导出。离线处理用户选定文件或会话工作区文件。",
-      "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
-      "capabilities": [
-        "独立画布：节点、连线、文字、图层与多页编辑",
-        "AI 读取和结构化改图，版本校验保护手工草稿",
-        "原生 .drawio 保存及当前页面 SVG/PNG 导出；不联网、不调用额外模型"
-      ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/drawai-0.1.1/drawai-0.1.1.zip",
-      "sha256": "7a6e4972a1a7e6092fdce8a4e7ec5666b3e530d349fde2ff0f3e0c9639c7dace"
-    },
-    {
-      "id": "study-cards",
+      "id": "dev.firefly.study-cards",
       "name": "语言学习",
-      "version": "0.2.0",
-      "description": "六种语言的本地阅读、划词查词、词典导入、生词收藏与卡片复习，无需 Anki 或外部服务。",
+      "version": "0.3.0",
+      "sdk": "^1.2.0",
+      "description": "六种语言的本地阅读、划词查词、生词收藏与卡片复习，无需 Anki 或外部服务。",
       "author": "Firefly-0423",
-      "downloads": 0,
-      "pluginApiVersion": 1,
+      "license": "MIT",
+      "native": false,
+      "permissions": [
+        "ui.windows"
+      ],
+      "tools": [
+        {
+          "name": "create",
+          "title": "创建学习卡片",
+          "risk": [
+            "fs-write"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "new",
+          "title": "读取新学习卡",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "due",
+          "title": "读取待复习卡",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "review",
+          "title": "记录复习评分",
+          "risk": [
+            "fs-write"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "update",
+          "title": "编辑学习卡片",
+          "risk": [
+            "fs-write"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "delete",
+          "title": "删除学习卡片",
+          "risk": [
+            "fs-write"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "list",
+          "title": "浏览学习卡片",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "lookup",
+          "title": "查询本地词典",
+          "risk": [
+            "fs-read"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        },
+        {
+          "name": "collect",
+          "title": "收藏学习生词",
+          "risk": [
+            "fs-write"
+          ],
+          "modes": [
+            "work",
+            "code"
+          ]
+        }
+      ],
       "capabilities": [
         "独立学习窗口：英语、日语、韩语、法语、德语、西班牙语阅读与划词查词",
-        "导入本地 Yomitan v3 词典，显示来源与释义语言；原创演示词典用于体验流程",
-        "收集生词和例句，自动创建学习卡；保留原七个卡片工具和评分规则",
-        "事务迁移旧卡片，私有本地保存、导出；无需 Anki 或外部服务"
+        "内置六语种原创演示词典与系统本地朗读（本地词典/文章打开与导出随 1.2.x 文件选择能力提供）",
+        "收集生词和例句，自动创建学习卡；保留原七个卡片工具与四档评分规则",
+        "事务迁移旧版卡片，数据保存在插件私有目录 ctx.dataDir；无需 Anki 或外部服务"
       ],
-      "zip": "https://github.com/Firefly-0423/firefly-plugins/releases/download/study-cards-0.2.0/study-cards-0.2.0.zip",
-      "sha256": "1af222a989fd5b3728e3459d756e4f00d0a40cfc0cfac9ab6701c636423bc6ca"
+      "package": "https://github.com/Firefly-0423/firefly-plugins/releases/download/dev.firefly.study-cards-0.3.0/dev.firefly.study-cards-0.3.0.ffplugin",
+      "sha256": "12c12732c299bad61d7eacb5e4c6df5e1212d08593832795b4fbd161fd369fcc"
     }
   ]
 }

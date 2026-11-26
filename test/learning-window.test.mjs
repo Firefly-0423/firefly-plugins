@@ -1,76 +1,132 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { EventEmitter } from 'node:events';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { createTestHost, readManifest } from "./plugin-fixture.mjs";
 
-function setup() {
-  const windows = [], handlers = new Map(), calls = [], settings = new Map();
-  let assets, requests;
-  class Win extends EventEmitter {
-    constructor(options) { super(); this.options = options; this.webContents = new EventEmitter(); this.webContents.mainFrame = {url:'firefly-plugin://study-cards/ui/index.html'}; this.webContents.setWindowOpenHandler = f => { this.popup = f; }; windows.push(this); }
-    isDestroyed() { return !!this.dead; } async loadURL() {} show() {} focus() {} setBackgroundColor(value) {this.background=value;} destroy() { this.dead = true; this.emit('closed'); }
-  }
-  const electron = { BrowserWindow: Win, ipcMain:{handle:(k,f)=>handlers.set(k,f),removeHandler:k=>handlers.delete(k)},protocol:{isProtocolHandled:async()=>true},session:{fromPartition:()=>({protocol:{handle:async(_s,f)=>{assets=f;},unhandle:async()=>{}},setPermissionRequestHandler(){},setPermissionCheckHandler(){},webRequest:{onBeforeRequest:f=>{requests=f;}}})},dialog:{showOpenDialog:async()=>({canceled:true,filePaths:[]})} };
-  const service={call:async(action,args)=>{calls.push({action,args});return {cards:0};}};
-  const storage={get:key=>settings.get(key),set:(key,value)=>settings.set(key,value)};
-  return {electron,service,storage,windows,handlers,calls,get assets(){return assets;}, get requests(){return requests;},invoke(action,args,event){const win=windows.at(-1);return [...handlers.values()][0](event||{sender:win.webContents,senderFrame:win.webContents.mainFrame},action,args);}};
+const require = createRequire(import.meta.url);
+const { createLearningActions } = require("../plugins/dev.firefly.study-cards/runtime/learning-actions.cjs");
+const { createService } = require("../plugins/dev.firefly.study-cards/runtime/service.cjs");
+const { createPlugin } = require("../plugins/dev.firefly.study-cards/index.cjs");
+
+const PLUGIN_ID = "dev.firefly.study-cards";
+
+async function makeTempDir(t) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "learning-win-"));
+  const owned = await realpath(dir);
+  const parent = await realpath(os.tmpdir());
+  t.after(async () => {
+    if (path.dirname(owned) !== parent || await realpath(dir) !== owned) throw new Error("Unsafe cleanup");
+    await rm(owned, { recursive: true, force: true });
+  });
+  return owned;
 }
 
-test('learning window coalesces opens, confines assets and rejects spoofed IPC and paths',async()=>{
-  const {createLearningWindow}=require('../plugins/study-cards/runtime/window.cjs');
-  const h=setup(),host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});
-  await Promise.all([host.open(),host.open()]);
-  assert.equal(h.windows.length,1);
-  const w=h.windows[0];
-  assert.equal(w.options.webPreferences.sandbox,true);
-  assert.equal(w.options.webPreferences.contextIsolation,true);
-  assert.equal(w.options.webPreferences.nodeIntegration,false);
-  assert.equal((await h.invoke('lookup',{term:'hello',language:'en'},{sender:{},senderFrame:w.webContents.mainFrame})).ok,false);
-  assert.equal((await h.invoke('dictionaryPrepare',{path:'C:/private.zip'})).ok,false);
-  assert.equal((await h.invoke('lookup',{term:'hello',language:'en',path:'C:/private'})).ok,false);
-  assert.equal((await h.invoke('chooseDictionary',{path:'C:/private.zip'})).ok,false);
-  assert.equal((await h.invoke('lookup',{term:'hello',language:'en'})).ok,true);
-  assert.deepEqual(w.popup(),{action:'deny'});
-  let blocked; h.requests({url:'https://example.com'},r=>{blocked=r.cancel;}); assert.equal(blocked,true);
-  assert.equal((await h.assets({url:'firefly-plugin://study-cards/ui/../index.cjs',method:'GET'})).status,404);
-  assert.equal((await h.assets({url:'firefly-plugin://study-cards/ui/index.html?x',method:'GET'})).status,404);
-  await host.dispose(); assert.equal(h.handlers.size,0); assert.equal(w.dead,true);
+test("learningActions persists theme in ctx.dataDir, rejects extra/path fields, and rejects removed file-picker RPCs", async (t) => {
+  const dataDir = await makeTempDir(t);
+  let serviceCalls = 0;
+  const service = {
+    async call() {
+      serviceCalls++;
+      return {};
+    },
+  };
+  const actions = createLearningActions({ service, dataDir });
+
+  // Defaults safely to pearl-white
+  assert.deepEqual(await actions.dispatch("getTheme"), { theme: "pearl-white" });
+  await assert.rejects(actions.dispatch("setTheme", { theme: "unknown" }), { code: "E_ARGUMENT" });
+  await assert.rejects(actions.dispatch("setTheme", { theme: "firefly-dark", path: "C:/private" }), { code: "E_ARGUMENT" });
+  assert.deepEqual(await actions.dispatch("setTheme", { theme: "firefly-dark" }), { theme: "firefly-dark" });
+
+  // Theme persists across instances in ctx.dataDir/settings.json
+  const actions2 = createLearningActions({ service, dataDir });
+  assert.deepEqual(await actions2.dispatch("getTheme"), { theme: "firefly-dark" });
+  const saved = JSON.parse(await readFile(path.join(dataDir, "settings.json"), "utf8"));
+  assert.equal(saved["ui-theme"], "firefly-dark");
+
+  // Removed file-picker / arbitrary path RPCs must never reach service
+  for (const method of ["chooseDictionary", "dictionaryPrepare", "dictionaryCommit", "dictionaryCancel", "chooseArticle", "exportData"]) {
+    await assert.rejects(actions.dispatch(method, { path: "C:/private.zip" }), { code: "E_ARGUMENT" });
+  }
+  await assert.rejects(actions.dispatch("lookup", { language: "en", term: "hello", path: "C:/private" }), { code: "E_ARGUMENT" });
+  assert.equal(serviceCalls, 0);
+
+  // Corrupt settings.json falls back safely to pearl-white
+  await writeFile(path.join(dataDir, "settings.json"), "{corrupt", "utf8");
+  assert.deepEqual(await actions.dispatch("getTheme"), { theme: "pearl-white" });
 });
 
-test('canceled native file selection never reaches dictionary importer',async()=>{
-  const {createLearningWindow}=require('../plugins/study-cards/runtime/window.cjs');
-  const h=setup(),host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});await host.open();
-  assert.equal((await h.invoke('chooseDictionary',{language:'ja'})).value.canceled,true);
-  assert.equal(h.calls.length,0);
-  await host.dispose();
-});
+test("ctx.ui.onMessage bridge works with createTestHost, respects ui.windows permission, and enforces CSP on UI assets", async (t) => {
+  const dataDir = await makeTempDir(t);
+  const manifest = readManifest(PLUGIN_ID);
 
-test('saved theme controls native background and first HTML paint, persists, and accepts only two themes',async()=>{
-  const {createLearningWindow}=require('../plugins/study-cards/runtime/window.cjs');
-  const h=setup();h.storage.set('ui-theme','firefly-dark');
-  let host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});await host.open();
-  assert.equal(h.windows[0].options.backgroundColor,'#000000');
-  assert.ok(h.windows[0].options.webPreferences.additionalArguments.includes('--learning-theme=firefly-dark'));
-  const page=await h.assets({url:'firefly-plugin://study-cards/ui/index.html',method:'GET'});
-  assert.match(await page.text(),/data-ui-theme="firefly-dark"/);
-  assert.equal((await h.invoke('getTheme')).value.theme,'firefly-dark');
-  assert.equal((await h.invoke('setTheme',{theme:'unknown'})).ok,false);
-  assert.equal((await h.invoke('setTheme',{theme:'pearl-white',path:'C:/private'})).ok,false);
-  assert.equal((await h.invoke('setTheme',{theme:'pearl-white'})).ok,true);
-  assert.equal(h.windows[0].background,'#f5f6f9');
-  assert.equal(h.storage.get('ui-theme'),'pearl-white');assert.equal(h.calls.length,0);
-  await host.dispose();host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});await host.open();
-  assert.equal(h.windows[1].options.backgroundColor,'#f5f6f9');await host.dispose();
-});
+  // 1. Revoking ui.windows still activates tools without crashing, while UI bridge rejects
+  const revokedHost = createTestHost({
+    manifest,
+    mode: "work",
+    level: "full",
+    dataDir,
+    revokedPermissions: ["ui.windows"],
+  });
+  await revokedHost.activate(createPlugin());
+  assert.equal((await revokedHost.callTool("list", { limit: 10 })).status, "succeeded");
+  await revokedHost.deactivate("disabled");
 
-test('corrupt theme setting falls back and a failed save keeps native background unchanged',async()=>{
-  const {createLearningWindow}=require('../plugins/study-cards/runtime/window.cjs');
-  const h=setup();h.storage.set('ui-theme',{toString:'corrupt'});
-  const host=createLearningWindow({service:h.service,storage:h.storage,electron:h.electron});await host.open();
-  assert.equal(h.windows[0].options.backgroundColor,'#f5f6f9');
-  h.storage.set=()=>{throw Error('disk full');};
-  assert.equal((await h.invoke('setTheme',{theme:'firefly-dark'})).ok,false);
-  assert.equal(h.windows[0].background,undefined);assert.equal((await h.invoke('getTheme')).value.theme,'pearl-white');
-  await host.dispose();
+  // 2. Full ui.windows permission enables sendUiMessage round-trips
+  const host = createTestHost({ manifest, mode: "work", level: "full", dataDir });
+  await host.activate(createPlugin());
+  const svcDataDir = await makeTempDir(t);
+  const svc = createService({ rootDir: svcDataDir });
+  try {
+    assert.deepEqual(
+      await host.sendUiMessage({ from: { kind: "window", id: "workbench" }, method: "getTheme", params: {} }),
+      { theme: "pearl-white" },
+    );
+    await host.sendUiMessage({ from: { kind: "window", id: "workbench" }, method: "setTheme", params: { theme: "firefly-dark" } });
+    assert.deepEqual(
+      await host.sendUiMessage({ from: { kind: "window", id: "workbench" }, method: "getTheme", params: {} }),
+      { theme: "firefly-dark" },
+    );
+
+    await host.sendUiMessage({ from: { kind: "window", id: "workbench" }, method: "demoInstall", params: {} });
+    const lookup = await host.sendUiMessage({
+      from: { kind: "window", id: "workbench" },
+      method: "lookup",
+      params: { language: "en", term: "quiet" },
+    });
+    assert.equal(lookup.entries.length, 1);
+
+    await assert.rejects(
+      host.sendUiMessage({ from: { kind: "window", id: "workbench" }, method: "chooseDictionary", params: { language: "en" } }),
+      { code: "E_ARGUMENT" },
+    );
+
+    // 3. Static UI assets obey strict CSP (no inline scripts, no on* handlers, no style= attributes, no legacy window.Learning)
+    const html = await readFile(new URL("../plugins/dev.firefly.study-cards/ui/index.html", import.meta.url), "utf8");
+    const learningJs = await readFile(new URL("../plugins/dev.firefly.study-cards/ui/learning.js", import.meta.url), "utf8");
+    const themeJs = await readFile(new URL("../plugins/dev.firefly.study-cards/ui/theme.js", import.meta.url), "utf8");
+    assert.equal(/<script(?![^>]*\bsrc=)[^>]*>/i.test(html), false, "no inline script allowed");
+    assert.equal(/\son[a-z]+\s*=/i.test(html), false, "no inline event handler attributes allowed");
+    assert.equal(/\sstyle\s*=/i.test(html), false, "no inline style attributes allowed");
+    assert.equal(learningJs.includes("window.fireflyPlugin"), true);
+    assert.equal(themeJs.includes("window.fireflyPlugin"), true);
+    assert.equal(learningJs.includes("window.Learning"), false);
+    assert.equal(themeJs.includes("window.Learning"), false);
+
+    // 4. Real service backing actions works end-to-end
+    const svcActions = createLearningActions({ service: svc, dataDir: svcDataDir });
+    const savedArticle = await svcActions.dispatch("articleSave", {
+      title: "Test",
+      language: "en",
+      text: "Quiet joy",
+      position: 2,
+    });
+    assert.equal((await svcActions.dispatch("articleGet", { id: savedArticle.id })).position, 2);
+  } finally {
+    await svc.dispose();
+    await host.deactivate("disabled");
+  }
 });
