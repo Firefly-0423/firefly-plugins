@@ -6,12 +6,12 @@
 
 ## 应用如何使用这里
 
-| 内容 | 地址 |
-| --- | --- |
-| 目录 | `https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/main/registry.json` |
-| 插件包 | 本仓库的 GitHub Release，`<id>-<version>/<id>-<version>.zip` |
+| Firefly 版本 | 市场目录 | 安装包 |
+| --- | --- | --- |
+| 1.1.x | [v1 目录](./registry.json) | [GitHub Release](https://github.com/Firefly-0423/firefly-plugins/releases) 中的 `.zip` |
+| 1.2.0 | [v2 目录](https://github.com/Firefly-0423/firefly-plugins/blob/marketplace-v2/marketplace/registry.json) | [`marketplace-v2` 中的 `.ffplugin`](https://github.com/Firefly-0423/firefly-plugins/tree/marketplace-v2/marketplace/packages) |
 
-Firefly 在设置的插件页打开市场时读取目录，安装时只从本仓库的 Release 下载，并核对目录里记录的 SHA-256，不一致就拒绝安装。安装后的插件默认**停用**，需要你手动启用。
+1.2.0 的 v2 目录目前提供文本统计、JSON 工具、时区工具、代码语言识别、文本截断和语言学习。新版应用需包含 [Firefly-Agent #148](https://github.com/Firefly-0423/Firefly-Agent/pull/148) 的市场接入改动，才能在设置中读取该目录。安装时校验 SHA-256，新装插件默认停用。下方插件表和开发命令对应本分支的 v1 目录。
 
 ## 现有插件
 
@@ -66,7 +66,7 @@ npm run build                  # 生成 dist/ 下的 ZIP 和 registry.json
 
 The official plugin marketplace for [Firefly](https://github.com/Firefly-0423/Firefly-Agent): plugin sources, the `registry.json` catalog the app reads, and the tooling that validates, packages and releases plugins.
 
-**How the app uses it.** Firefly reads `https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/main/registry.json`, downloads packages only from this repository's GitHub Releases (`<id>-<version>/<id>-<version>.zip`), and checks each package against the SHA-256 in the catalog. Installed plugins start **disabled**.
+**Marketplaces by version.** Firefly 1.1.x uses the [v1 catalog](./registry.json) and Release ZIPs. Firefly 1.2.0 uses the [v2 catalog](https://github.com/Firefly-0423/firefly-plugins/blob/marketplace-v2/marketplace/registry.json) and its [repository-hosted packages](https://github.com/Firefly-0423/firefly-plugins/tree/marketplace-v2/marketplace/packages) through [Firefly-Agent #148](https://github.com/Firefly-0423/Firefly-Agent/pull/148). Both validate SHA-256 and start newly installed plugins disabled. The plugin list and build commands below describe this branch's v1 catalog.
 
 **Plugins.** `text-stats`, `json-tools`, `timezone-tools`, `code-language` and `text-trim`, all fully offline: no network, no file access, no commands.
 
