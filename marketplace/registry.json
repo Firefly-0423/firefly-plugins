@@ -34,10 +34,10 @@
     {
       "id": "dev.firefly.json-tools",
       "name": "JSON 工具",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "sdk": "^1.2.0",
       "description": "离线校验 JSON 是否合法且无损，并按结构比较两段 JSON、报告第一处差异路径。不联网、不读写文件。",
-      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "author": "Firefly-0423",
       "license": "MIT",
       "native": false,
       "permissions": [],
@@ -70,16 +70,16 @@
         "两段 JSON 的结构比较与首处差异路径",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.json-tools-2.0.0.ffplugin",
-      "sha256": "825a6dc793b25c38ab9e90e53638d2ff9e031c6f85f942c4dbc6919c01342776"
+      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.json-tools-2.0.1.ffplugin",
+      "sha256": "06f5c168be96629d8a6179f4bbf03ff88a46271a5a39f2e6fa15d0b05b8f91f3"
     },
     {
       "id": "dev.firefly.timezone-tools",
       "name": "时区工具",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "sdk": "^1.2.0",
       "description": "离线校验 IANA 时区名，并在时区之间换算时间（处理夏令时空档与重复时刻）。不联网、不读写文件。",
-      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "author": "Firefly-0423",
       "license": "MIT",
       "native": false,
       "permissions": [],
@@ -112,16 +112,16 @@
         "时区间时间换算，识别夏令时空档与重复时刻",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.timezone-tools-2.0.0.ffplugin",
-      "sha256": "fee97f7ea6f8892aac4695b85ad76494f0dafe63127365401f0174d790124e65"
+      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.timezone-tools-2.0.1.ffplugin",
+      "sha256": "c98fb4936abc5e489e878f92f434caf9ef2cdcf2f5545c6dcaa16b1c0ff24073"
     },
     {
       "id": "dev.firefly.code-language",
       "name": "代码语言识别",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "sdk": "^1.2.0",
       "description": "离线按文件扩展名识别源码、配置、脚本和标记文件的语法高亮语言，只看文件名，不读取文件内容。",
-      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "author": "Firefly-0423",
       "license": "MIT",
       "native": false,
       "permissions": [],
@@ -143,16 +143,16 @@
         "只看文件名，不读取文件内容",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.code-language-2.0.0.ffplugin",
-      "sha256": "0543dcb0621ba7904ea1a5556b0514e676c5305561de4504c13c2759344701a1"
+      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.code-language-2.0.1.ffplugin",
+      "sha256": "2b9df1d3680a42d1d340af416bd9233dc53038bfc9476f883ce620d1c21ee6a8"
     },
     {
       "id": "dev.firefly.text-trim",
       "name": "文本截断",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "sdk": "^1.2.0",
       "description": "离线把长文本按 UTF-8 字节预算截断为开头、结尾或两端，落在完整字符边界上并报告确切丢弃的字节数。不联网、不读写文件。",
-      "author": "Firefly-0423; adapted from deepseek-harness (MIT)",
+      "author": "Firefly-0423",
       "license": "MIT",
       "native": false,
       "permissions": [],
@@ -174,8 +174,8 @@
         "截断落在完整字符边界上，报告确切丢弃的字节数",
         "离线计算，不联网、不读写文件、不执行命令"
       ],
-      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.text-trim-2.0.0.ffplugin",
-      "sha256": "fb3d14e003a92bf93dc4b3cc9d4bebb6fab1973bc10072eebba27938c1656863"
+      "package": "https://raw.githubusercontent.com/Firefly-0423/firefly-plugins/marketplace-v2/marketplace/packages/dev.firefly.text-trim-2.0.1.ffplugin",
+      "sha256": "ade58dc6eae67b7e5c473cf598ba374908cfec23d9180026dc022fad769a01fa"
     },
     {
       "id": "dev.firefly.study-cards",
