@@ -1,6 +1,6 @@
 # 时区工具（dev.firefly.timezone-tools）
 
-Firefly Plugin SDK 1.2.0 插件，版本 2.0.0，清单文件为 `firefly.plugin.json`。
+Firefly Plugin SDK 1.2.0 插件，版本 2.0.1，清单文件为 `firefly.plugin.json`。
 
 在 `work` 与 `code` 模式下提供两个离线工具（声明风险为 `fs-read`，`permissions: []`，在 `chat` 模式下不可用），只使用引擎内置的 `Intl` 和 `Date`。
 
