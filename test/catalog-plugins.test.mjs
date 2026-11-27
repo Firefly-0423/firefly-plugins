@@ -44,7 +44,7 @@ for (const [id, spec] of Object.entries(ported)) {
     }
     assert.equal(manifest.schemaVersion, 1);
     assert.equal(manifest.id, id);
-    assert.equal(manifest.version, "2.0.0");
+    assert.equal(manifest.version, "2.0.1");
     assert.match(
       manifest.version,
       new RegExp(JSON.parse(readFileSync(new URL("../schema/host-contract.json", import.meta.url), "utf8")).semverPattern),
@@ -55,8 +55,7 @@ for (const [id, spec] of Object.entries(ported)) {
     assert.equal(manifest.native, false);
     assert.deepEqual(manifest.permissions, []);
     assert.equal(typeof manifest.author, "object");
-    assert.match(manifest.author.name, /Firefly-0423/);
-    assert.match(manifest.author.name, /deepseek-harness/);
+    assert.equal(manifest.author.name, "Firefly-0423");
     assert.equal(manifest.author.email, undefined);
 
     assert.deepEqual(manifest.tools.map(t => t.name).sort(), [...spec.tools].sort());

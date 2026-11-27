@@ -1,6 +1,6 @@
 # 文本截断（dev.firefly.text-trim）
 
-Firefly Plugin SDK 1.2.0 插件，版本 2.0.0，清单文件为 `firefly.plugin.json`。
+Firefly Plugin SDK 1.2.0 插件，版本 2.0.1，清单文件为 `firefly.plugin.json`。
 
 在 `work` 与 `code` 模式下提供离线工具 `cap`（声明风险为 `fs-read`，`permissions: []`，在 `chat` 模式下不可用），把长文本截断到 UTF-8 字节预算，并报告确切丢弃了多少字节。
 

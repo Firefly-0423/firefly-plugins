@@ -35,7 +35,7 @@ test("manifest passes 1.2.0 schema validation with no 0.x fields", () => {
   const manifest = readManifest(PLUGIN_ID);
   assert.deepEqual(manifestErrors(manifest), []);
   assert.equal(manifest.id, PLUGIN_ID);
-  assert.equal(manifest.version, "2.0.0");
+  assert.equal(manifest.version, "2.0.1");
   assert.equal(manifest.sdk, "^1.2.0");
 });
 

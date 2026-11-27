@@ -1,6 +1,6 @@
 # 代码语言识别（dev.firefly.code-language）
 
-Firefly Plugin SDK 1.2.0 插件，版本 2.0.0，清单文件为 `firefly.plugin.json`。
+Firefly Plugin SDK 1.2.0 插件，版本 2.0.1，清单文件为 `firefly.plugin.json`。
 
 在 `work` 与 `code` 模式下提供离线工具 `detect`（声明风险为 `fs-read`，`permissions: []`，在 `chat` 模式下不可用），按文件名里的扩展名识别语法高亮语言，不读取文件内容。
 
